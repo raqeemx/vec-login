@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام تقييم المركبات المستردة - تسجيل الدخول</title>
+    <title>نظام تقييم المركبات - تسجيل الدخول</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -18,9 +18,7 @@
             --primary-dark: #5a67d8;
             --secondary: #764ba2;
             --success: #10b981;
-            --warning: #f59e0b;
             --danger: #ef4444;
-            --dark: #1f2937;
         }
 
         body {
@@ -54,15 +52,10 @@
         }
 
         .bg-shapes span:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
-        .bg-shapes span:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .bg-shapes span:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; }
         .bg-shapes span:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
-        .bg-shapes span:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
-        .bg-shapes span:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
-        .bg-shapes span:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
-        .bg-shapes span:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
-        .bg-shapes span:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
-        .bg-shapes span:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
-        .bg-shapes span:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+        .bg-shapes span:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 1s; }
+        .bg-shapes span:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 3s; }
 
         @keyframes float {
             0% {
@@ -104,7 +97,6 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .logo-section h1 {
@@ -151,10 +143,6 @@
             color: var(--primary);
         }
 
-        .auth-tab:hover:not(.active) {
-            color: var(--primary-dark);
-        }
-
         .auth-content {
             padding: 35px;
         }
@@ -181,7 +169,7 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: var(--dark);
+            color: #1f2937;
             font-size: 0.95rem;
         }
 
@@ -195,7 +183,6 @@
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
-            font-size: 1.1rem;
         }
 
         .input-wrapper input {
@@ -216,10 +203,6 @@
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
-        .input-wrapper input.error {
-            border-color: var(--danger);
-        }
-
         .toggle-password {
             position: absolute;
             left: 15px;
@@ -230,21 +213,6 @@
             color: #94a3b8;
             cursor: pointer;
             padding: 5px;
-        }
-
-        .toggle-password:hover {
-            color: var(--primary);
-        }
-
-        .error-text {
-            color: var(--danger);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .error-text.show {
-            display: block;
         }
 
         .form-options {
@@ -259,23 +227,12 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            cursor: pointer;
-        }
-
-        .remember-me input {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
         }
 
         .forgot-link {
             color: var(--primary);
             text-decoration: none;
             font-weight: 500;
-        }
-
-        .forgot-link:hover {
-            text-decoration: underline;
         }
 
         .btn-submit {
@@ -299,25 +256,6 @@
         .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-submit .spinner {
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .divider {
@@ -357,112 +295,12 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            font-family: inherit;
             font-size: 0.95rem;
             font-weight: 500;
         }
 
         .btn-social:hover {
             border-color: var(--primary);
-            background: #f8fafc;
-        }
-
-        .btn-social.google i { color: #ea4335; }
-        .btn-social.microsoft i { color: #00a4ef; }
-
-        .features-list {
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .features-list h4 {
-            color: var(--dark);
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            color: #64748b;
-        }
-
-        .feature-item i {
-            color: var(--success);
-            font-size: 0.9rem;
-        }
-
-        .reset-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .reset-header i {
-            font-size: 50px;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .reset-header h3 {
-            color: var(--dark);
-            margin-bottom: 10px;
-        }
-
-        .reset-header p {
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        .btn-back {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary);
-            background: none;
-            border: none;
-            font-family: inherit;
-            font-size: 0.95rem;
-            cursor: pointer;
-            margin-top: 20px;
-            margin-inline: auto;
-        }
-
-        .btn-back:hover {
-            text-decoration: underline;
-        }
-
-        .success-message {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            color: #065f46;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .success-message i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            display: block;
         }
 
         .alert {
@@ -472,12 +310,10 @@
             display: none;
             align-items: center;
             gap: 10px;
-            font-size: 0.9rem;
         }
 
         .alert.show {
             display: flex;
-            animation: fadeIn 0.3s ease;
         }
 
         .alert-error {
@@ -490,24 +326,6 @@
             background: #ecfdf5;
             border: 1px solid #a7f3d0;
             color: #065f46;
-        }
-
-        .alert-info {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1e40af;
-        }
-
-        .auth-footer {
-            text-align: center;
-            margin-top: 25px;
-            color: rgba(255,255,255,0.9);
-            font-size: 0.9rem;
-        }
-
-        .auth-footer a {
-            color: white;
-            font-weight: 600;
         }
 
         .loading-overlay {
@@ -545,29 +363,13 @@
             margin: 0 auto 15px;
         }
 
-        @media (max-width: 480px) {
-            .auth-content {
-                padding: 25px 20px;
-            }
-
-            .social-login {
-                flex-direction: column;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-options {
-                flex-direction: column;
-                gap: 15px;
-            }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
     <div class="bg-shapes">
-        <span></span><span></span><span></span><span></span><span></span>
         <span></span><span></span><span></span><span></span><span></span>
     </div>
 
@@ -605,7 +407,6 @@
                                 <i class="fas fa-envelope"></i>
                                 <input type="email" id="loginEmail" placeholder="example@email.com" required>
                             </div>
-                            <span class="error-text" id="loginEmailError"></span>
                         </div>
 
                         <div class="form-group">
@@ -617,7 +418,6 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                            <span class="error-text" id="loginPasswordError"></span>
                         </div>
 
                         <div class="form-options">
@@ -628,7 +428,7 @@
                             <a href="#" class="forgot-link" onclick="showResetPassword(event)">نسيت كلمة المرور؟</a>
                         </div>
 
-                        <button type="submit" class="btn-submit" id="loginBtn">
+                        <button type="submit" class="btn-submit">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>تسجيل الدخول</span>
                         </button>
@@ -646,28 +446,6 @@
                             <span>Microsoft</span>
                         </button>
                     </div>
-
-                    <div class="features-list">
-                        <h4><i class="fas fa-shield-alt"></i> مميزات النظام</h4>
-                        <div class="features-grid">
-                            <div class="feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>تزامن فوري</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>حفظ سحابي</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>أمان عالي</span>
-                            </div>
-                            <div class="feature-item">
-                                <i class="fas fa-check-circle"></i>
-                                <span>نسخ احتياطي</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Register Panel -->
@@ -679,7 +457,6 @@
                                 <i class="fas fa-user"></i>
                                 <input type="text" id="registerName" placeholder="أدخل اسمك الكامل" required>
                             </div>
-                            <span class="error-text" id="registerNameError"></span>
                         </div>
 
                         <div class="form-group">
@@ -688,19 +465,17 @@
                                 <i class="fas fa-envelope"></i>
                                 <input type="email" id="registerEmail" placeholder="example@email.com" required>
                             </div>
-                            <span class="error-text" id="registerEmailError"></span>
                         </div>
 
                         <div class="form-group">
                             <label>كلمة المرور</label>
                             <div class="input-wrapper">
                                 <i class="fas fa-lock"></i>
-                                <input type="password" id="registerPassword" placeholder="كلمة مرور قوية (8 أحرف على الأقل)" required minlength="8">
+                                <input type="password" id="registerPassword" placeholder="8 أحرف على الأقل" required minlength="8">
                                 <button type="button" class="toggle-password" onclick="togglePassword('registerPassword', this)">
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                            <span class="error-text" id="registerPasswordError"></span>
                         </div>
 
                         <div class="form-group">
@@ -712,10 +487,9 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                            <span class="error-text" id="confirmPasswordError"></span>
                         </div>
 
-                        <button type="submit" class="btn-submit" id="registerBtn">
+                        <button type="submit" class="btn-submit">
                             <i class="fas fa-user-plus"></i>
                             <span>إنشاء حساب</span>
                         </button>
@@ -734,47 +508,7 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- Reset Password Panel -->
-                <div id="resetPanel" class="form-panel">
-                    <div class="reset-header">
-                        <i class="fas fa-key"></i>
-                        <h3>استعادة كلمة المرور</h3>
-                        <p>أدخل بريدك الإلكتروني وسنرسل لك رابط لإعادة تعيين كلمة المرور</p>
-                    </div>
-
-                    <div class="success-message" id="resetSuccess">
-                        <i class="fas fa-check-circle"></i>
-                        <strong>تم الإرسال بنجاح!</strong>
-                        <p>تحقق من بريدك الإلكتروني للحصول على رابط إعادة التعيين</p>
-                    </div>
-
-                    <form id="resetForm" onsubmit="handleResetPassword(event)">
-                        <div class="form-group">
-                            <label>البريد الإلكتروني</label>
-                            <div class="input-wrapper">
-                                <i class="fas fa-envelope"></i>
-                                <input type="email" id="resetEmail" placeholder="example@email.com" required>
-                            </div>
-                            <span class="error-text" id="resetEmailError"></span>
-                        </div>
-
-                        <button type="submit" class="btn-submit" id="resetBtn">
-                            <i class="fas fa-paper-plane"></i>
-                            <span>إرسال رابط الاستعادة</span>
-                        </button>
-                    </form>
-
-                    <button class="btn-back" onclick="showLoginPanel()">
-                        <i class="fas fa-arrow-right"></i>
-                        العودة لتسجيل الدخول
-                    </button>
-                </div>
             </div>
-        </div>
-
-        <div class="auth-footer">
-            <p>© 2024 نظام تقييم المركبات المستردة</p>
         </div>
     </div>
 
@@ -841,8 +575,10 @@
         }
 
         function hideAlert() {
-            document.getElementById('alertBox').classList.remove
- function showLoading(text = 'جاري المعالجة...') {
+            document.getElementById('alertBox').classList.remove('show');
+        }
+
+        function showLoading(text = 'جاري المعالجة...') {
             document.getElementById('loadingText').textContent = text;
             document.getElementById('loadingOverlay').classList.add('show');
         }
@@ -871,7 +607,7 @@
                     : firebase.auth.Auth.Persistence.SESSION;
                 await auth.setPersistence(persistence);
                 await auth.signInWithEmailAndPassword(email, password);
-                showAlert('تم تسجيل الدخول بنجاح! جاري التحويل...', 'success');
+                showAlert('تم تسجيل الدخول بنجاح!', 'success');
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1000);
@@ -919,33 +655,10 @@
                         notifications: true
                     }
                 });
-                showAlert('تم إنشاء الحساب بنجاح! جاري التحويل...', 'success');
+                showAlert('تم إنشاء الحساب بنجاح!', 'success');
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1000);
-            } catch (error) {
-                hideLoading();
-                handleAuthError(error);
-            }
-        }
-
-        async function handleResetPassword(event) {
-            event.preventDefault();
-            hideAlert();
-            const email = document.getElementById('resetEmail').value.trim();
-            
-            if (!email) {
-                showAlert('يرجى إدخال البريد الإلكتروني');
-                return;
-            }
-
-            showLoading('جاري إرسال رابط الاستعادة...');
-            
-            try {
-                await auth.sendPasswordResetEmail(email);
-                hideLoading();
-                document.getElementById('resetSuccess').classList.add('show');
-                document.getElementById('resetForm').style.display = 'none';
             } catch (error) {
                 hideLoading();
                 handleAuthError(error);
@@ -995,19 +708,7 @@
 
         function showResetPassword(event) {
             event.preventDefault();
-            document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById('resetPanel').classList.add('active');
-            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-            hideAlert();
-        }
-
-        function showLoginPanel() {
-            document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById('loginPanel').classList.add('active');
-            document.querySelector('[data-tab="login"]').classList.add('active');
-            document.getElementById('resetSuccess').classList.remove('show');
-            document.getElementById('resetForm').style.display = 'block';
-            hideAlert();
+            alert('ميزة استعادة كلمة المرور قيد التطوير');
         }
 
         function handleAuthError(error) {
@@ -1018,12 +719,12 @@
                 'auth/email-already-in-use': 'البريد الإلكتروني مستخدم بالفعل',
                 'auth/weak-password': 'كلمة المرور ضعيفة جداً',
                 'auth/invalid-email': 'البريد الإلكتروني غير صالح',
-                'auth/too-many-requests': 'تم تجاوز عدد المحاولات. حاول لاحقاً',
+                'auth/too-many-requests': 'تم تجاوز عدد المحاولات',
                 'auth/network-request-failed': 'خطأ في الاتصال بالإنترنت',
                 'auth/popup-closed-by-user': 'تم إغلاق نافذة تسجيل الدخول',
                 'auth/invalid-credential': 'بيانات الدخول غير صحيحة'
             };
-            showAlert(errorMessages[error.code] || 'حدث خطأ غير متوقع. حاول مجدداً');
+            showAlert(errorMessages[error.code] || 'حدث خطأ غير متوقع');
         }
 
         // Check if user is already logged in
