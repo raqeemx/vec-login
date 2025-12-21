@@ -1,9 +1,10 @@
 # 🚗 نظام تقييم المركبات المستردة - Firebase Edition
 # Repossessed Vehicle Evaluation System - Firebase Edition
 
-![Version](https://img.shields.io/badge/Version-3.0-blue)
+![Version](https://img.shields.io/badge/Version-3.1-blue)
 ![Firebase](https://img.shields.io/badge/Firebase-Enabled-orange)
 ![License](https://img.shields.io/badge/License-Open%20Source-green)
+![Status](https://img.shields.io/badge/Status-Fixed%20%26%20Working-success)
 
 ---
 
@@ -12,6 +13,18 @@
 نظام متكامل لتقييم وإدارة المركبات المستردة مع دعم Firebase للتخزين السحابي والمزامنة الفورية بين جميع الأجهزة.
 
 A comprehensive system for evaluating and managing repossessed vehicles with Firebase support for cloud storage and real-time synchronization across all devices.
+
+---
+
+## ✅ الإصلاحات الأخيرة (v3.1) / Recent Fixes
+
+### 🔧 تم إصلاح:
+1. **مشكلة تسجيل الدخول بـ Google** - كان يعلق على "جاري التحقق من الحساب" ولا ينتقل
+2. **خطأ Syntax في dashboard.html** - فاصلة مفقودة في firebaseConfig
+3. **تحسين إعادة التوجيه** - استخدام `window.location.replace()` بدلاً من `href`
+4. **إضافة مؤشر حالة الاتصال** - شارة تظهر حالة الاتصال بالسحابة
+5. **معالجة أفضل للأخطاء** - رسائل خطأ أكثر وضوحاً
+6. **مراقبة الاتصال** - إشعارات عند انقطاع/استعادة الاتصال
 
 ---
 
@@ -36,7 +49,7 @@ A comprehensive system for evaluating and managing repossessed vehicles with Fir
 - ✅ تعديل من الكمبيوتر ← يظهر في الجوال فوراً
 - ✅ تعديل من الجوال ← يظهر في التابلت فوراً
 - ✅ جميع الأجهزة متزامنة دائماً
-- ✅ مؤشر حالة الاتصال
+- ✅ مؤشر حالة الاتصال (متصل/غير متصل/جاري المزامنة)
 
 ### 🛡️ 4. الأمان والخصوصية (Security)
 - ✅ كل مستخدم يرى بياناته فقط
@@ -47,16 +60,15 @@ A comprehensive system for evaluating and managing repossessed vehicles with Fir
 ### 🎨 5. واجهة المستخدم (User Interface)
 - ✅ تصميم عصري واحترافي
 - ✅ دعم اللغة العربية (RTL)
-- ✅ الوضع الليلي (Dark Mode)
 - ✅ تصميم متجاوب لجميع الشاشات
 - ✅ رسوم متحركة سلسة
+- ✅ مؤشر حالة الاتصال بالسحابة
 
 ### 📊 6. إدارة المركبات (Vehicle Management)
 - ✅ إضافة مركبات جديدة
 - ✅ تعديل بيانات المركبات
 - ✅ حذف المركبات
 - ✅ البحث والفلترة
-- ✅ الترتيب المتعدد
 
 ### 📤 7. التصدير (Export)
 - ✅ تصدير Excel
@@ -69,15 +81,11 @@ A comprehensive system for evaluating and managing repossessed vehicles with Fir
 
 ```
 /
-├── auth.html                    # صفحة تسجيل الدخول والتسجيل
-├── dashboard.html               # لوحة التحكم الرئيسية
-├── index.html                   # النسخة المحلية (بدون Firebase)
-├── firebase-config.js           # ملف إعدادات Firebase
-├── firestore.rules              # قواعد أمان Firestore
-├── FIREBASE_SETUP_GUIDE.md      # دليل الإعداد خطوة بخطوة
-├── README.md                    # هذا الملف
-├── main.js                      # (للنسخة المحلية)
-└── style.css                    # (للنسخة المحلية)
+├── index.html              # صفحة تسجيل الدخول والتسجيل (الرئيسية)
+├── dashboard.html          # لوحة التحكم الرئيسية
+├── firebase-config.js      # ملف إعدادات Firebase (مرجع)
+├── SETUP_GUIDE.md          # دليل الإعداد خطوة بخطوة
+└── README.md               # هذا الملف
 ```
 
 ---
@@ -103,53 +111,54 @@ Build > Authentication > Get Started
 فعّل: Email/Password + Google
 ```
 
-#### 3️⃣ إنشاء Firestore Database
+#### 3️⃣ إضافة نطاق مصرح
+```
+Authentication > Settings > Authorized domains
+أضف نطاق موقعك
+```
+
+#### 4️⃣ إنشاء Firestore Database
 ```
 Build > Firestore Database > Create Database
 اختر الموقع وابدأ في Test Mode
 ```
 
-#### 4️⃣ الحصول على إعدادات التكوين
+#### 5️⃣ الحصول على إعدادات التكوين
 ```
 Project Settings > Your Apps > Web App
 انسخ firebaseConfig
 ```
 
-#### 5️⃣ تحديث الملفات
+#### 6️⃣ تحديث الملفات
 ```
-افتح auth.html و dashboard.html
+افتح index.html و dashboard.html
 استبدل firebaseConfig بإعداداتك
 ```
 
-#### 6️⃣ النشر
+#### 7️⃣ النشر
 ```
 ارفع الملفات إلى استضافتك
 أو استخدم Firebase Hosting
 ```
 
-📘 **للتفاصيل الكاملة**: راجع [FIREBASE_SETUP_GUIDE.md](./FIREBASE_SETUP_GUIDE.md)
+📘 **للتفاصيل الكاملة**: راجع [SETUP_GUIDE.md](./SETUP_GUIDE.md)
 
 ---
 
 ## 📱 الصفحات / Pages
 
-### 1. صفحة تسجيل الدخول (auth.html)
-- `auth.html` - الصفحة الرئيسية للمصادقة
-
-**المسارات:**
-| الوظيفة | الوصف |
-|---------|-------|
-| `/auth.html` | صفحة تسجيل الدخول |
-| `/auth.html#register` | إنشاء حساب جديد |
-| `/auth.html#reset` | استعادة كلمة المرور |
+### 1. صفحة تسجيل الدخول (index.html)
+| المسار | الوصف |
+|--------|-------|
+| `/index.html` | صفحة تسجيل الدخول |
+| Tab: تسجيل الدخول | الدخول بحساب موجود |
+| Tab: حساب جديد | إنشاء حساب جديد |
+| نسيت كلمة المرور | استعادة كلمة المرور |
 
 ### 2. لوحة التحكم (dashboard.html)
-- `dashboard.html` - لوحة التحكم الرئيسية (تتطلب تسجيل الدخول)
-
-**المسارات:**
-| الوظيفة | الوصف |
-|---------|-------|
-| `/dashboard.html` | لوحة التحكم الرئيسية |
+| المسار | الوصف |
+|--------|-------|
+| `/dashboard.html` | لوحة التحكم الرئيسية (تتطلب تسجيل الدخول) |
 
 ---
 
@@ -157,7 +166,6 @@ Project Settings > Your Apps > Web App
 
 ### Firebase SDK
 ```html
-<!-- تضمين في HTML -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -171,7 +179,8 @@ const firebaseConfig = {
     projectId: "YOUR_PROJECT",
     storageBucket: "YOUR_PROJECT.appspot.com",
     messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    appId: "YOUR_APP_ID",
+    measurementId: "YOUR_MEASUREMENT_ID"
 };
 ```
 
@@ -182,6 +191,7 @@ users/
     ├── name: string
     ├── email: string
     ├── createdAt: timestamp
+    ├── provider: string (email/google/microsoft)
     ├── settings: {
     │   ├── darkMode: boolean
     │   ├── language: string
@@ -199,8 +209,6 @@ users/
             ├── odometer: number
             ├── marketValue: number
             ├── overallRating: string
-            ├── recommendation: string
-            ├── notes: string
             ├── createdAt: timestamp
             └── updatedAt: timestamp
 ```
@@ -242,6 +250,19 @@ service cloud.firestore {
 
 ---
 
+## 🐛 استكشاف الأخطاء / Troubleshooting
+
+| الخطأ | السبب | الحل |
+|-------|-------|------|
+| `auth/configuration-not-found` | إعدادات خاطئة | تحقق من firebaseConfig |
+| `auth/unauthorized-domain` | نطاق غير مصرح | أضف النطاق في Firebase Console > Authentication > Settings |
+| `permission-denied` | قواعد أمان | تحقق من Firestore Rules |
+| `auth/popup-blocked` | حجب النوافذ | السماح بالنوافذ المنبثقة في المتصفح |
+| `auth/popup-closed-by-user` | إغلاق النافذة | المستخدم أغلق نافذة Google - طبيعي |
+| "جاري التحقق" لا ينتهي | خطأ في الكود | تم إصلاحه في v3.1 |
+
+---
+
 ## 💰 التكلفة / Pricing
 
 ### خطة Spark (المجانية):
@@ -252,17 +273,6 @@ service cloud.firestore {
 - ✅ 10 GB نقل/شهر
 
 **كافية للاستخدام الشخصي والمشاريع الصغيرة!**
-
----
-
-## 🐛 استكشاف الأخطاء / Troubleshooting
-
-| الخطأ | السبب | الحل |
-|-------|-------|------|
-| `auth/configuration-not-found` | إعدادات خاطئة | تحقق من firebaseConfig |
-| `auth/unauthorized-domain` | نطاق غير مصرح | أضف النطاق في Firebase Console |
-| `permission-denied` | قواعد أمان | تحقق من Firestore Rules |
-| `auth/popup-blocked` | حجب النوافذ | السماح بالنوافذ المنبثقة |
 
 ---
 
@@ -285,14 +295,4 @@ This project is open source for personal and commercial use.
 
 ---
 
-## 👨‍💻 المساهمة / Contributing
-
-نرحب بالمساهمات! يرجى:
-1. Fork المشروع
-2. إنشاء Branch جديد
-3. إجراء التغييرات
-4. إرسال Pull Request
-
----
-
-**الإصدار 3.0** - Firebase Edition | آخر تحديث: ديسمبر 2024
+**الإصدار 3.1** - Firebase Edition | آخر تحديث: ديسمبر 2024

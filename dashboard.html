@@ -570,6 +570,51 @@
             opacity: 0.8;
         }
 
+        /* Connection Status Badge */
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .connection-status.online {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .connection-status.offline {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .connection-status.syncing {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -591,6 +636,13 @@
             
             .vehicles-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .connection-status {
+                bottom: 10px;
+                left: 10px;
+                padding: 8px 15px;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -803,6 +855,12 @@
     <!-- Notification Container -->
     <div id="notificationContainer"></div>
 
+    <!-- Connection Status Badge -->
+    <div class="connection-status online" id="connectionStatus">
+        <span class="status-dot"></span>
+        <span id="connectionText">متصل</span>
+    </div>
+
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -811,8 +869,8 @@
             projectId: "vec-login-58dea",
             storageBucket: "vec-login-58dea.firebasestorage.app",
             messagingSenderId: "651347381212",
-            appId: "1:651347381212:web:dc7eba2bbf69532e13dd19"
-                   measurementId: "G-P9Q2KBSNQH"
+            appId: "1:651347381212:web:dc7eba2bbf69532e13dd19",
+            measurementId: "G-P9Q2KBSNQH"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -824,23 +882,40 @@
         let currentVehicleId = null;
         let unsubscribeSnapshot = null;
 
-        // Auth Check
+        // Auth Check with timeout
+        let authTimeout = null;
+        
         auth.onAuthStateChanged(async (user) => {
             const loader = document.getElementById('authCheckLoader');
             const main = document.getElementById('mainContent');
             
+            // Clear any existing timeout
+            if (authTimeout) {
+                clearTimeout(authTimeout);
+                authTimeout = null;
+            }
+            
             if (user) {
+                console.log('User authenticated:', user.email);
                 currentUser = user;
                 loader.style.display = 'none';
                 main.style.display = 'block';
                 
                 updateUserUI(user);
                 setupRealtimeSync();
+                setupConnectionMonitor();
                 await loadVehicles();
             } else {
-                window.location.href = 'index.html';
+                console.log('User not authenticated, redirecting to login...');
+                window.location.replace('index.html');
             }
         });
+        
+        // Set auth timeout - redirect if auth takes too long
+        authTimeout = setTimeout(() => {
+            console.log('Auth check timeout - redirecting to login');
+            window.location.replace('index.html');
+        }, 10000); // 10 seconds timeout
 
         function updateUserUI(user) {
             const name = user.displayName || 'المستخدم';
@@ -861,6 +936,8 @@
             if (!currentUser) return;
             if (unsubscribeSnapshot) unsubscribeSnapshot();
             
+            updateConnectionStatus('syncing', 'جاري المزامنة...');
+            
             unsubscribeSnapshot = db.collection('users')
                 .doc(currentUser.uid)
                 .collection('vehicles')
@@ -873,12 +950,49 @@
                         });
                         renderVehicles();
                         updateStats();
+                        updateConnectionStatus('online', 'متصل ومتزامن');
                     },
                     (error) => {
                         console.error('Sync Error:', error);
-                        showNotification('خطأ في المزامنة', 'error');
+                        updateConnectionStatus('offline', 'غير متصل');
+                        showNotification('خطأ في المزامنة: ' + error.message, 'error');
                     }
                 );
+        }
+        
+        // ========================================
+        // Connection Monitor
+        // ========================================
+        function setupConnectionMonitor() {
+            // Monitor online/offline status
+            window.addEventListener('online', () => {
+                updateConnectionStatus('online', 'متصل');
+                showNotification('تم استعادة الاتصال', 'success');
+                // Re-setup realtime sync when back online
+                setupRealtimeSync();
+            });
+            
+            window.addEventListener('offline', () => {
+                updateConnectionStatus('offline', 'غير متصل');
+                showNotification('انقطع الاتصال - البيانات قد لا تكون محدثة', 'warning');
+            });
+            
+            // Initial status
+            if (navigator.onLine) {
+                updateConnectionStatus('online', 'متصل');
+            } else {
+                updateConnectionStatus('offline', 'غير متصل');
+            }
+        }
+        
+        function updateConnectionStatus(status, text) {
+            const statusEl = document.getElementById('connectionStatus');
+            const textEl = document.getElementById('connectionText');
+            
+            if (statusEl && textEl) {
+                statusEl.className = 'connection-status ' + status;
+                textEl.textContent = text;
+            }
         }
 
         async function loadVehicles() {
