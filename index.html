@@ -1061,7 +1061,7 @@
             // Set new redirect timeout
             redirectTimeout = setTimeout(() => {
                 console.log('Executing redirect now...');
-                window.location.replace('dashboard-v2.html');
+                window.location.replace('dashboard.html');
             }, REDIRECT_DELAY);
         }
 
@@ -1220,7 +1220,7 @@
                     console.log('User already signed in, redirecting to dashboard...');
                     showLoading('جاري التحويل للوحة التحكم...');
                     setTimeout(() => {
-                        window.location.replace('dashboard-v2.html');
+                        window.location.replace('dashboard.html');
                     }, 800);
                 } else {
                     // Auth is being processed by login/register functions

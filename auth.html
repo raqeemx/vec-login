@@ -940,7 +940,7 @@
                 // Redirect to dashboard
                 showAlert('تم تسجيل الدخول بنجاح! جاري التحويل...', 'success');
                 setTimeout(() => {
-                    window.location.href = 'dashboard-v2.html';
+                    window.location.href = 'dashboard.html';
                 }, 1000);
                 
             } catch (error) {
@@ -1002,7 +1002,7 @@
                 
                 showAlert('تم إنشاء الحساب بنجاح! جاري التحويل...', 'success');
                 setTimeout(() => {
-                    window.location.href = 'dashboard-v2.html';
+                    window.location.href = 'dashboard.html';
                 }, 1000);
                 
             } catch (error) {
@@ -1064,7 +1064,7 @@
                     });
                 }
                 
-                window.location.href = 'dashboard-v2.html';
+                window.location.href = 'dashboard.html';
                 
             } catch (error) {
                 hideLoading();
@@ -1092,7 +1092,7 @@
                     });
                 }
                 
-                window.location.href = 'dashboard-v2.html';
+                window.location.href = 'dashboard.html';
                 
             } catch (error) {
                 hideLoading();
@@ -1147,7 +1147,7 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 // User is signed in, redirect to dashboard
-                window.location.href = 'dashboard-v2.html';
+                window.location.href = 'dashboard.html';
             }
         });
     </script>
