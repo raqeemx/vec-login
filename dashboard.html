@@ -6,6 +6,12 @@
     <title>لوحة التحكم - نظام تقييم المركبات</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- New Features CSS -->
+    <link rel="stylesheet" href="css/new-features/dark-mode.css">
+    <link rel="stylesheet" href="css/new-features/notifications.css">
+    <link rel="stylesheet" href="css/new-features/validation.css">
+    <link rel="stylesheet" href="css/new-features/filters.css">
+    <link rel="stylesheet" href="css/new-features/enhanced-stats.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -718,8 +724,14 @@
                 </div>
             </header>
 
-            <!-- Stats Section -->
-            <section class="stats-grid">
+            <!-- Filters Section (New Feature) -->
+            <div id="nf-filters-container" style="padding: 20px 30px 0;"></div>
+            
+            <!-- Enhanced Stats Section (New Feature) -->
+            <div id="nf-enhanced-stats"></div>
+            
+            <!-- Original Stats Section (Hidden - kept for fallback) -->
+            <section class="stats-grid" style="display: none;">
                 <div class="stat-card">
                     <div class="stat-card-header">
                         <div>
@@ -1325,6 +1337,149 @@
                 setTimeout(() => notification.remove(), 300);
             }, 4000);
         }
+    </script>
+
+    <!-- New Features JS -->
+    <script src="js/new-features/dark-mode-toggle.js"></script>
+    <script src="js/new-features/enhanced-notifications.js"></script>
+    <script src="js/new-features/form-validator.js"></script>
+    <script src="js/new-features/advanced-filters.js"></script>
+    <script src="js/new-features/dashboard-stats.js"></script>
+    
+    <script>
+        // ========================================
+        // New Features Integration
+        // ========================================
+        
+        // Override showNotification to use enhanced notifications
+        const originalShowNotification = window.showNotification;
+        window.showNotification = function(message, type = 'info') {
+            if (window.NFNotify) {
+                NFNotify.show({ message, type });
+            } else if (originalShowNotification) {
+                originalShowNotification(message, type);
+            }
+        };
+        
+        // Initialize filters when vehicles are loaded
+        let filtersInitialized = false;
+        const originalRenderVehicles = window.renderVehicles;
+        window.renderVehicles = function() {
+            // Initialize filters UI once
+            if (!filtersInitialized && vehicles.length > 0) {
+                NFFilters.createFiltersUI('nf-filters-container', {
+                    onFilter: function(filteredData) {
+                        // Re-render with filtered data
+                        renderFilteredVehicles(filteredData);
+                    }
+                });
+                NFFilters.populateFilterOptions(vehicles);
+                filtersInitialized = true;
+            }
+            
+            // Apply current filters
+            if (NFFilters.instance) {
+                const filtered = NFFilters.instance.getFilteredData(vehicles);
+                renderFilteredVehicles(filtered);
+            } else {
+                renderFilteredVehicles(vehicles);
+            }
+        };
+        
+        // Render filtered vehicles
+        function renderFilteredVehicles(vehicleList) {
+            const grid = document.getElementById('vehiclesGrid');
+            document.getElementById('vehicleCount').textContent = vehicleList.length;
+            NFFilters.updateResultsCount(vehicleList.length);
+            
+            if (vehicleList.length === 0) {
+                grid.innerHTML = `
+                    <div class="nf-no-results" style="grid-column: 1/-1;">
+                        <i class="fas fa-search"></i>
+                        <h3>لا توجد نتائج</h3>
+                        <p>حاول تغيير معايير البحث أو الفلترة</p>
+                        <button class="btn btn-primary" onclick="NFFilters.instance.reset()">
+                            <i class="fas fa-redo"></i>
+                            إعادة تعيين الفلاتر
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = vehicleList.map(v => `
+                <div class="vehicle-card">
+                    <div class="vehicle-header">
+                        <div>
+                            <div class="vehicle-title">${v.make || ''} ${v.model || ''} ${v.year || ''}</div>
+                            <div class="vehicle-id">${v.contractNo || 'بدون رقم عقد'}</div>
+                        </div>
+                        <span class="vehicle-status status-${v.overallRating || 'good'}">${getRatingText(v.overallRating)}</span>
+                    </div>
+                    
+                    <div class="vehicle-details">
+                        <div class="detail-item">
+                            <i class="fas fa-user"></i>
+                            <span>${v.customerName || 'غير محدد'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-barcode"></i>
+                            <span>${v.vin || 'غير محدد'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>${v.odometer ? v.odometer.toLocaleString() + ' كم' : 'غير محدد'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-id-card"></i>
+                            <span>${v.plateNo || 'غير محدد'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="vehicle-value">
+                        <span>القيمة السوقية</span>
+                        <strong>${v.marketValue ? v.marketValue.toLocaleString() : 0} ريال</strong>
+                    </div>
+                    
+                    <div class="vehicle-actions">
+                        <button class="btn-view" onclick="viewVehicle('${v.id}')">
+                            <i class="fas fa-eye"></i>
+                            عرض
+                        </button>
+                        <button class="btn-edit" onclick="editVehicle('${v.id}')">
+                            <i class="fas fa-edit"></i>
+                            تعديل
+                        </button>
+                        <button class="btn-delete" onclick="confirmDelete('${v.id}')">
+                            <i class="fas fa-trash"></i>
+                            حذف
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Initialize form validator for vehicle modal
+        document.addEventListener('DOMContentLoaded', function() {
+            new NFValidator.FormValidator('#vehicleForm', {
+                realTime: true,
+                scrollToError: true,
+                showSuccessState: true
+            });
+        });
+        
+        // Update enhanced stats when vehicles change
+        const originalUpdateStats = window.updateStats;
+        window.updateStats = function() {
+            // Update enhanced stats
+            if (window.NFStats && vehicles.length >= 0) {
+                NFStats.update('nf-enhanced-stats', vehicles);
+            }
+            // Also call original if exists
+            if (originalUpdateStats) {
+                originalUpdateStats();
+            }
+        };
     </script>
 </body>
 </html>

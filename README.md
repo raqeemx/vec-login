@@ -1,10 +1,10 @@
 # 🚗 نظام تقييم المركبات المستردة - Firebase Edition
 # Repossessed Vehicle Evaluation System - Firebase Edition
 
-![Version](https://img.shields.io/badge/Version-3.1-blue)
+![Version](https://img.shields.io/badge/Version-4.0-blue)
 ![Firebase](https://img.shields.io/badge/Firebase-Enabled-orange)
 ![License](https://img.shields.io/badge/License-Open%20Source-green)
-![Status](https://img.shields.io/badge/Status-Fixed%20%26%20Working-success)
+![Status](https://img.shields.io/badge/Status-Enhanced%20%26%20Working-success)
 
 ---
 
@@ -16,64 +16,72 @@ A comprehensive system for evaluating and managing repossessed vehicles with Fir
 
 ---
 
-## ✅ الإصلاحات الأخيرة (v3.1) / Recent Fixes
+## ✨ الميزات الجديدة (v4.0) / New Features
 
-### 🔧 تم إصلاح:
-1. **مشكلة تسجيل الدخول بـ Google** - كان يعلق على "جاري التحقق من الحساب" ولا ينتقل
-2. **خطأ Syntax في dashboard.html** - فاصلة مفقودة في firebaseConfig
-3. **تحسين إعادة التوجيه** - استخدام `window.location.replace()` بدلاً من `href`
-4. **إضافة مؤشر حالة الاتصال** - شارة تظهر حالة الاتصال بالسحابة
-5. **معالجة أفضل للأخطاء** - رسائل خطأ أكثر وضوحاً
-6. **مراقبة الاتصال** - إشعارات عند انقطاع/استعادة الاتصال
+### 🌙 1. الوضع الليلي (Dark Mode)
+- ✅ تبديل سريع بزر عائم
+- ✅ حفظ التفضيل في localStorage
+- ✅ دعم تفضيلات النظام التلقائية
+- ✅ انتقال سلس بين الأوضاع
+- ✅ تطبيق على جميع الصفحات
+
+### 🔔 2. نظام الإشعارات المحسّن
+- ✅ إشعارات Toast جميلة ومتحركة
+- ✅ 4 أنواع: success, error, warning, info
+- ✅ شريط تقدم للإغلاق التلقائي
+- ✅ إمكانية الإغلاق اليدوي
+- ✅ تكديس ذكي للإشعارات
+
+### ✅ 3. التحقق المتقدم (Advanced Validation)
+- ✅ تحقق فوري أثناء الكتابة
+- ✅ علامة (*) للحقول المطلوبة
+- ✅ رسائل خطأ واضحة بالعربية
+- ✅ تمييز بصري للحقول (صحيح/خطأ)
+- ✅ Scroll تلقائي لأول خطأ
+
+### 🔍 4. البحث والفلترة المتقدم
+- ✅ بحث نصي شامل (الاسم، الصانع، الموديل، VIN)
+- ✅ فلاتر متعددة (الصانع، الموديل، السنة، التقييم)
+- ✅ ترتيب حسب (الأحدث، القيمة، الموديل)
+- ✅ عداد النتائج الفوري
+- ✅ حفظ الفلاتر في URL
+- ✅ شارات الفلاتر النشطة
+
+### 📊 5. لوحة إحصائيات محسّنة
+- ✅ بطاقات إحصائيات متحركة
+- ✅ إجمالي المركبات والقيمة
+- ✅ متوسط التقييم مع أشرطة التوزيع
+- ✅ مقارنة شهرية (هذا الشهر vs الماضي)
+- ✅ أعلى 5 مركبات قيمة
+- ✅ مؤشرات الاتجاه (صعود/هبوط)
 
 ---
 
 ## 🌟 الميزات الرئيسية / Main Features
 
-### 🔐 1. نظام الحسابات (Authentication)
+### 🔐 نظام الحسابات (Authentication)
 - ✅ تسجيل حساب جديد بالبريد الإلكتروني
-- ✅ تسجيل الدخول بالبريد الإلكتروني وكلمة المرور
 - ✅ تسجيل الدخول بـ Google
 - ✅ تسجيل الدخول بـ Microsoft
 - ✅ استعادة كلمة المرور
-- ✅ تذكرني (Remember Me)
 - ✅ تسجيل الخروج الآمن
 
-### ☁️ 2. التخزين السحابي (Cloud Storage)
+### ☁️ التخزين السحابي (Cloud Storage)
 - ✅ حفظ تلقائي في Firestore
-- ✅ نسخ احتياطي تلقائي
-- ✅ استعادة البيانات من أي جهاز
+- ✅ مزامنة فورية بين الأجهزة
 - ✅ تصدير واستيراد JSON
 
-### 🔄 3. التزامن الفوري (Real-time Sync)
-- ✅ تعديل من الكمبيوتر ← يظهر في الجوال فوراً
-- ✅ تعديل من الجوال ← يظهر في التابلت فوراً
-- ✅ جميع الأجهزة متزامنة دائماً
-- ✅ مؤشر حالة الاتصال (متصل/غير متصل/جاري المزامنة)
-
-### 🛡️ 4. الأمان والخصوصية (Security)
-- ✅ كل مستخدم يرى بياناته فقط
-- ✅ لا يمكن لأحد الوصول لبيانات الآخرين
-- ✅ قواعد أمان Firestore صارمة
-- ✅ تشفير البيانات في النقل والتخزين
-
-### 🎨 5. واجهة المستخدم (User Interface)
+### 🎨 واجهة المستخدم (User Interface)
 - ✅ تصميم عصري واحترافي
 - ✅ دعم اللغة العربية (RTL)
 - ✅ تصميم متجاوب لجميع الشاشات
 - ✅ رسوم متحركة سلسة
-- ✅ مؤشر حالة الاتصال بالسحابة
+- ✅ الوضع الليلي/النهاري
 
-### 📊 6. إدارة المركبات (Vehicle Management)
-- ✅ إضافة مركبات جديدة
-- ✅ تعديل بيانات المركبات
-- ✅ حذف المركبات
-- ✅ البحث والفلترة
-
-### 📤 7. التصدير (Export)
+### 📤 التصدير (Export)
 - ✅ تصدير Excel
-- ✅ تصدير JSON (نسخ احتياطي)
-- ✅ استيراد JSON
+- ✅ تصدير PDF
+- ✅ تصدير JSON
 
 ---
 
@@ -81,11 +89,30 @@ A comprehensive system for evaluating and managing repossessed vehicles with Fir
 
 ```
 /
-├── index.html              # صفحة تسجيل الدخول والتسجيل (الرئيسية)
-├── dashboard.html          # لوحة التحكم الرئيسية
-├── firebase-config.js      # ملف إعدادات Firebase (مرجع)
-├── SETUP_GUIDE.md          # دليل الإعداد خطوة بخطوة
-└── README.md               # هذا الملف
+├── index.html                    # صفحة تسجيل الدخول
+├── dashboard.html                # لوحة التحكم الرئيسية
+├── auth.html                     # قالب صفحة تسجيل دخول بديل
+├── main.js                       # JavaScript الرئيسي للنموذج
+├── style.css                     # أنماط CSS الرئيسية
+├── firebase-config.js            # ملف إعدادات Firebase
+│
+├── 📁 css/new-features/          # أنماط الميزات الجديدة
+│   ├── dark-mode.css             # 🌙 الوضع الليلي
+│   ├── notifications.css         # 🔔 الإشعارات
+│   ├── validation.css            # ✅ التحقق
+│   ├── filters.css               # 🔍 الفلاتر
+│   └── enhanced-stats.css        # 📊 الإحصائيات
+│
+├── 📁 js/new-features/           # JavaScript الميزات الجديدة
+│   ├── dark-mode-toggle.js       # 🌙 تبديل الوضع الليلي
+│   ├── enhanced-notifications.js # 🔔 نظام الإشعارات
+│   ├── form-validator.js         # ✅ التحقق من الحقول
+│   ├── advanced-filters.js       # 🔍 البحث والفلترة
+│   └── dashboard-stats.js        # 📊 إحصائيات محسنة
+│
+├── README.md                     # هذا الملف
+├── SETUP_GUIDE.md               # دليل الإعداد
+└── FIREBASE_SETUP_GUIDE.md      # دليل Firebase
 ```
 
 ---
@@ -111,129 +138,105 @@ Build > Authentication > Get Started
 فعّل: Email/Password + Google
 ```
 
-#### 3️⃣ إضافة نطاق مصرح
-```
-Authentication > Settings > Authorized domains
-أضف نطاق موقعك
-```
-
-#### 4️⃣ إنشاء Firestore Database
+#### 3️⃣ إنشاء Firestore Database
 ```
 Build > Firestore Database > Create Database
-اختر الموقع وابدأ في Test Mode
 ```
 
-#### 5️⃣ الحصول على إعدادات التكوين
+#### 4️⃣ تحديث إعدادات Firebase
+```javascript
+// في index.html و dashboard.html
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    ...
+};
 ```
-Project Settings > Your Apps > Web App
-انسخ firebaseConfig
-```
-
-#### 6️⃣ تحديث الملفات
-```
-افتح index.html و dashboard.html
-استبدل firebaseConfig بإعداداتك
-```
-
-#### 7️⃣ النشر
-```
-ارفع الملفات إلى استضافتك
-أو استخدم Firebase Hosting
-```
-
-📘 **للتفاصيل الكاملة**: راجع [SETUP_GUIDE.md](./SETUP_GUIDE.md)
 
 ---
 
 ## 📱 الصفحات / Pages
 
-### 1. صفحة تسجيل الدخول (index.html)
-| المسار | الوصف |
-|--------|-------|
-| `/index.html` | صفحة تسجيل الدخول |
-| Tab: تسجيل الدخول | الدخول بحساب موجود |
-| Tab: حساب جديد | إنشاء حساب جديد |
-| نسيت كلمة المرور | استعادة كلمة المرور |
-
-### 2. لوحة التحكم (dashboard.html)
-| المسار | الوصف |
-|--------|-------|
-| `/dashboard.html` | لوحة التحكم الرئيسية (تتطلب تسجيل الدخول) |
+| المسار | الوصف | الميزات الجديدة |
+|--------|-------|-----------------|
+| `/index.html` | صفحة تسجيل الدخول | Dark Mode, Enhanced Notifications, Validation |
+| `/dashboard.html` | لوحة التحكم | Dark Mode, Filters, Enhanced Stats, Notifications |
 
 ---
 
-## 🔧 الإعدادات التقنية / Technical Setup
+## 🔧 استخدام الميزات الجديدة / Using New Features
 
-### Firebase SDK
-```html
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-```
-
-### Firebase Config
+### 🌙 Dark Mode
 ```javascript
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID",
-    measurementId: "YOUR_MEASUREMENT_ID"
-};
-```
+// تبديل الوضع
+NFDarkMode.toggle();
 
-### Firestore Structure
-```
-users/
-└── {userId}/
-    ├── name: string
-    ├── email: string
-    ├── createdAt: timestamp
-    ├── provider: string (email/google/microsoft)
-    ├── settings: {
-    │   ├── darkMode: boolean
-    │   ├── language: string
-    │   └── notifications: boolean
-    │   }
-    └── vehicles/
-        └── {vehicleId}/
-            ├── contractNo: string
-            ├── customerName: string
-            ├── make: string
-            ├── model: string
-            ├── year: number
-            ├── vin: string
-            ├── plateNo: string
-            ├── odometer: number
-            ├── marketValue: number
-            ├── overallRating: string
-            ├── createdAt: timestamp
-            └── updatedAt: timestamp
-```
-
----
-
-## 🔒 قواعد الأمان / Security Rules
-
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      
-      match /vehicles/{vehicleId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
-    }
-    
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
+// التحقق من الحالة
+if (NFDarkMode.isDarkMode()) {
+    console.log('الوضع الليلي مفعل');
 }
+```
+
+### 🔔 الإشعارات
+```javascript
+// إشعارات بسيطة
+NFNotify.success('تم الحفظ بنجاح!');
+NFNotify.error('حدث خطأ!');
+NFNotify.warning('تحذير!');
+NFNotify.info('معلومة جديدة');
+
+// إشعار متقدم
+NFNotify.show({
+    message: 'رسالة مخصصة',
+    title: 'عنوان مخصص',
+    type: 'success',
+    duration: 5000
+});
+```
+
+### ✅ التحقق من النماذج
+```javascript
+// إنشاء validator للنموذج
+const validator = new NFValidator.FormValidator('#myForm', {
+    realTime: true,
+    scrollToError: true,
+    showSuccessState: true
+});
+
+// التحقق يدوياً
+if (validator.validateAll()) {
+    // النموذج صالح
+}
+```
+
+### 🔍 البحث والفلترة
+```javascript
+// إنشاء واجهة الفلاتر
+NFFilters.createFiltersUI('container-id', {
+    onFilter: function(filteredData) {
+        // عرض البيانات المفلترة
+    }
+});
+
+// تعيين فلتر
+NFFilters.instance.setFilter('make', 'Toyota');
+
+// البحث
+NFFilters.instance.setSearch('كامري');
+
+// إعادة تعيين الكل
+NFFilters.instance.reset();
+```
+
+### 📊 الإحصائيات
+```javascript
+// تحديث الإحصائيات
+NFStats.update('container-id', vehiclesArray);
+
+// حساب الإحصائيات
+const stats = NFStats.calculateStats(vehiclesArray);
+console.log(stats.total, stats.totalValue);
 ```
 
 ---
@@ -250,40 +253,60 @@ service cloud.firestore {
 
 ---
 
+## 🔒 قواعد الأمان / Security Rules
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      match /vehicles/{vehicleId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
+```
+
+---
+
 ## 🐛 استكشاف الأخطاء / Troubleshooting
 
-| الخطأ | السبب | الحل |
-|-------|-------|------|
-| `auth/configuration-not-found` | إعدادات خاطئة | تحقق من firebaseConfig |
-| `auth/unauthorized-domain` | نطاق غير مصرح | أضف النطاق في Firebase Console > Authentication > Settings |
-| `permission-denied` | قواعد أمان | تحقق من Firestore Rules |
-| `auth/popup-blocked` | حجب النوافذ | السماح بالنوافذ المنبثقة في المتصفح |
-| `auth/popup-closed-by-user` | إغلاق النافذة | المستخدم أغلق نافذة Google - طبيعي |
-| "جاري التحقق" لا ينتهي | خطأ في الكود | تم إصلاحه في v3.1 |
+| الخطأ | الحل |
+|-------|------|
+| `auth/configuration-not-found` | تحقق من firebaseConfig |
+| `auth/unauthorized-domain` | أضف النطاق في Firebase Console |
+| `permission-denied` | تحقق من Firestore Rules |
+| Dark Mode لا يعمل | تأكد من تحميل dark-mode.css و dark-mode-toggle.js |
+| الفلاتر لا تظهر | تأكد من وجود `#nf-filters-container` في HTML |
 
 ---
 
-## 💰 التكلفة / Pricing
+## 📈 التحديثات القادمة / Future Updates
 
-### خطة Spark (المجانية):
-- ✅ 50,000 قراءة/يوم
-- ✅ 20,000 كتابة/يوم
-- ✅ 20,000 حذف/يوم
-- ✅ 1 GB تخزين
-- ✅ 10 GB نقل/شهر
-
-**كافية للاستخدام الشخصي والمشاريع الصغيرة!**
-
----
-
-## 📈 التحديثات المستقبلية / Future Updates
-
-- [ ] صفحة الملف الشخصي
-- [ ] صفحة الإعدادات
-- [ ] دعم رفع الصور إلى Firebase Storage
-- [ ] التقارير والإحصائيات المتقدمة
+- [ ] تصدير PDF محسّن مع صور
+- [ ] تصدير Excel متقدم
+- [ ] رفع الصور إلى Firebase Storage
 - [ ] إشعارات Push
-- [ ] تطبيق موبايل (PWA)
+- [ ] تطبيق PWA
+
+---
+
+## 🙏 خطة التراجع / Rollback Plan
+
+إذا حدثت مشكلة مع الميزات الجديدة:
+
+1. **حذف الملفات الجديدة:**
+   - `css/new-features/` (المجلد بالكامل)
+   - `js/new-features/` (المجلد بالكامل)
+
+2. **إزالة الروابط من HTML:**
+   - احذف `<link href="css/new-features/...">` من `<head>`
+   - احذف `<script src="js/new-features/...">` من قبل `</body>`
+
+3. **النظام الأصلي سيعمل كما كان 100%!**
 
 ---
 
@@ -291,8 +314,6 @@ service cloud.firestore {
 
 هذا المشروع مفتوح المصدر للاستخدام الشخصي والتجاري.
 
-This project is open source for personal and commercial use.
-
 ---
 
-**الإصدار 3.1** - Firebase Edition | آخر تحديث: ديسمبر 2024
+**الإصدار 4.0** - Enhanced Firebase Edition | آخر تحديث: ديسمبر 2024
