@@ -1658,6 +1658,7 @@
         let unsubscribeSnapshot = null;
         let authTimeout = null;
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+        const UPLOAD_TIMEOUT = 20000; // 20 seconds safety timeout for photo uploads
 
         // ========================================
         // Authentication
@@ -2256,6 +2257,16 @@
         // ========================================
         // Save Vehicle
         // ========================================
+        function withTimeout(promise, timeoutMs, errorMessage) {
+            return Promise.race([
+                promise,
+                new Promise((_, reject) => setTimeout(
+                    () => reject(new Error(errorMessage || 'Operation timed out')),
+                    timeoutMs
+                ))
+            ]);
+        }
+
         async function uploadPhotos(vehicleId) {
             const photoUrls = [];
             
@@ -2271,9 +2282,16 @@
                 if (entry.file) {
                     const extension = (entry.file.name.split('.').pop() || 'jpg').replace(/[^a-zA-Z0-9]/g, '') || 'jpg';
                     const ref = storage.ref(`users/${currentUser.uid}/vehicles/${vehicleId}/photo_${i}_${Date.now()}.${extension}`);
-                    const snapshot = await ref.put(entry.file);
-                    const url = await snapshot.ref.getDownloadURL();
-                    photoUrls.push(url);
+                    
+                    try {
+                        const uploadTask = ref.put(entry.file);
+                        const snapshot = await withTimeout(uploadTask, UPLOAD_TIMEOUT, 'انتهت مهلة رفع الصورة');
+                        const url = await withTimeout(snapshot.ref.getDownloadURL(), UPLOAD_TIMEOUT, 'انتهت مهلة جلب رابط الصورة');
+                        photoUrls.push(url);
+                    } catch (error) {
+                        console.error('Photo upload failed:', error);
+                        showNotification('تعذر رفع إحدى الصور، سيتم المتابعة بدونها', 'warning');
+                    }
                 }
             }
 
