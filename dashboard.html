@@ -11,6 +11,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1353,22 +1355,10 @@
     <div id="notificationContainer"></div>
 
     <script>
-        // ========================================
-        // Firebase Configuration
-        // ========================================
-        const firebaseConfig = {
-            apiKey: "AIzaSyA7B27LIH9FPZAsMKr5lvm2AIa3ZkZNOUo",
-            authDomain: "vec-login-58dea.firebaseapp.com",
-            projectId: "vec-login-58dea",
-            storageBucket: "vec-login-58dea.firebasestorage.app",
-            messagingSenderId: "651347381212",
-            appId: "1:651347381212:web:dc7eba2bbf69532e13dd19",
-            measurementId: "G-P9Q2KBSNQH"
-        };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
         // ========================================
         // Global Variables
@@ -1756,7 +1746,7 @@
             document.getElementById('notes').value = vehicle.notes || '';
             
             // Load photos
-            vehiclePhotos = vehicle.photos || [null, null, null];
+            vehiclePhotos = (vehicle.photos || []).slice(0, 3).map(url => url ? { url } : null);
             updatePhotoBoxes();
             
             document.getElementById('formSection').scrollIntoView({ behavior: 'smooth' });
@@ -1773,30 +1763,43 @@
                 showNotification('حجم الصورة يجب أن لا يتجاوز 5MB', 'error');
                 return;
             }
+
+            if (!file.type.startsWith('image/')) {
+                showNotification('يرجى اختيار ملف صورة صحيح', 'error');
+                return;
+            }
             
             const reader = new FileReader();
             reader.onload = (e) => {
-                vehiclePhotos[index] = e.target.result;
+                vehiclePhotos[index] = { file, preview: e.target.result };
                 updatePhotoBoxes();
             };
             reader.readAsDataURL(file);
         }
 
         function removePhoto(index, event) {
-            event.stopPropagation();
-            event.preventDefault();
+            if (event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
             vehiclePhotos[index] = null;
             updatePhotoBoxes();
+        }
+
+        function getPhotoPreview(photoEntry) {
+            if (!photoEntry) return null;
+            return photoEntry.preview || photoEntry.url || null;
         }
 
         function updatePhotoBoxes() {
             for (let i = 0; i < 3; i++) {
                 const box = document.getElementById(`photoBox${i}`);
-                if (vehiclePhotos[i]) {
+                const previewSrc = getPhotoPreview(vehiclePhotos[i]);
+                if (previewSrc) {
                     box.classList.add('has-photo');
                     box.innerHTML = `
                         <input type="file" accept="image/*" onchange="handlePhotoUpload(${i}, event)">
-                        <img src="${vehiclePhotos[i]}" alt="صورة ${i+1}" onclick="openPhotoModal('${vehiclePhotos[i]}')">
+                        <img src="${previewSrc}" alt="صورة ${i+1}" onclick="openPhotoModal('${previewSrc}')">
                         <button type="button" class="remove-photo" onclick="removePhoto(${i}, event)"><i class="fas fa-times"></i></button>
                     `;
                 } else {
@@ -1812,7 +1815,6 @@
         }
 
         function openPhotoModal(src) {
-            event.stopPropagation();
             document.getElementById('photoModalImg').src = src;
             document.getElementById('photoModal').classList.add('show');
         }
@@ -1824,6 +1826,30 @@
         // ========================================
         // Save Vehicle
         // ========================================
+        async function uploadPhotos(vehicleId) {
+            const photoUrls = [];
+            
+            for (let i = 0; i < vehiclePhotos.length; i++) {
+                const entry = vehiclePhotos[i];
+                if (!entry) continue;
+
+                if (entry.url && !entry.file) {
+                    photoUrls.push(entry.url);
+                    continue;
+                }
+
+                if (entry.file) {
+                    const extension = (entry.file.name.split('.').pop() || 'jpg').replace(/[^a-zA-Z0-9]/g, '') || 'jpg';
+                    const ref = storage.ref(`users/${currentUser.uid}/vehicles/${vehicleId}/photo_${i}_${Date.now()}.${extension}`);
+                    const snapshot = await ref.put(entry.file);
+                    const url = await snapshot.ref.getDownloadURL();
+                    photoUrls.push(url);
+                }
+            }
+
+            return photoUrls;
+        }
+
         async function saveVehicle() {
             const editId = document.getElementById('editId').value;
             
@@ -1843,22 +1869,39 @@
                 overallRating: document.getElementById('overallRating').value,
                 marketValue: document.getElementById('marketValue').value,
                 recommendation: document.getElementById('recommendation').value,
-                notes: document.getElementById('notes').value.trim(),
-                photos: vehiclePhotos.filter(p => p !== null),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                notes: document.getElementById('notes').value.trim()
             };
             
             showLoading(editId ? 'جاري التحديث...' : 'جاري الحفظ...');
             
             try {
+                let vehicleRef;
+                let vehicleId = editId;
+                
+                if (vehicleId) {
+                    vehicleRef = db.collection('users').doc(currentUser.uid)
+                        .collection('vehicles').doc(vehicleId);
+                } else {
+                    vehicleRef = db.collection('users').doc(currentUser.uid)
+                        .collection('vehicles').doc();
+                    vehicleId = vehicleRef.id;
+                }
+
+                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+                const photoUrls = await uploadPhotos(vehicleId);
+
+                const payload = {
+                    ...data,
+                    photos: photoUrls,
+                    updatedAt: timestamp
+                };
+
                 if (editId) {
-                    await db.collection('users').doc(currentUser.uid)
-                        .collection('vehicles').doc(editId).update(data);
+                    await vehicleRef.update(payload);
                     showNotification('تم تحديث المركبة بنجاح', 'success');
                 } else {
-                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    await db.collection('users').doc(currentUser.uid)
-                        .collection('vehicles').add(data);
+                    payload.createdAt = timestamp;
+                    await vehicleRef.set(payload);
                     showNotification('تم إضافة المركبة بنجاح', 'success');
                 }
                 
@@ -2043,6 +2086,65 @@
             showNotification('تم تصدير JSON بنجاح', 'success');
         }
 
+        function isSafePhotoUrl(url) {
+            if (typeof url !== 'string') return false;
+            if (url.startsWith('data:')) return false;
+            if (!/^https?:\/\//i.test(url)) return false;
+            return url.length < 500;
+        }
+
+        function validateVehiclePayload(vehicle) {
+            if (!vehicle || typeof vehicle !== 'object') return 'بيانات المركبة غير صالحة';
+
+            const requiredString = (value, label, maxLength = 200) => {
+                if (typeof value !== 'string' || !value.trim()) return `${label} مطلوب`;
+                if (value.length > maxLength) return `${label} يتجاوز الحد المسموح (${maxLength})`;
+                return null;
+            };
+
+            const contractError = requiredString(vehicle.contractNo, 'رقم العقد');
+            if (contractError) return contractError;
+
+            const vinError = requiredString(vehicle.vin, 'رقم الهيكل (VIN)', 40);
+            if (vinError) return vinError;
+
+            const customerError = requiredString(vehicle.customerName, 'اسم العميل');
+            if (customerError) return customerError;
+
+            const makeError = requiredString(vehicle.make, 'نوع المركبة');
+            if (makeError) return makeError;
+
+            const modelError = requiredString(vehicle.model, 'الموديل');
+            if (modelError) return modelError;
+
+            const year = parseInt(vehicle.year, 10);
+            if (Number.isNaN(year) || year < 1990 || year > 2100) return 'سنة الصنع غير صالحة';
+
+            if (vehicle.marketValue && isNaN(parseFloat(vehicle.marketValue))) {
+                return 'القيمة السوقية يجب أن تكون رقماً';
+            }
+
+            if (vehicle.photos && Array.isArray(vehicle.photos)) {
+                const unsafe = vehicle.photos.find(p => !isSafePhotoUrl(p));
+                if (unsafe) return 'روابط الصور غير صالحة أو تحتوي بيانات مضمّنة';
+            }
+
+            if (JSON.stringify(vehicle).length > 500000) {
+                return 'حجم سجل المركبة كبير جداً';
+            }
+
+            return null;
+        }
+
+        function sanitizeVehiclePayload(vehicle) {
+            const sanitized = { ...vehicle };
+            delete sanitized.id;
+            sanitized.photos = Array.isArray(vehicle.photos)
+                ? vehicle.photos.filter(isSafePhotoUrl).slice(0, 3)
+                : [];
+            return sanitized;
+        }
+
         async function importData(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -2069,18 +2171,33 @@
                     await batch.commit();
                 }
                 
-                // Import new
-                for (const v of data.vehicles) {
-                    const newData = { ...v };
-                    delete newData.id;
-                    newData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    newData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+                let imported = 0;
+                let skipped = 0;
+                
+                for (const [index, vehicle] of data.vehicles.entries()) {
+                    const validationError = validateVehiclePayload(vehicle);
+                    if (validationError) {
+                        console.warn(`Skipping vehicle #${index + 1}: ${validationError}`);
+                        skipped++;
+                        continue;
+                    }
+
+                    const payload = sanitizeVehiclePayload(vehicle);
+                    payload.createdAt = timestamp;
+                    payload.updatedAt = timestamp;
+
                     await db.collection('users').doc(currentUser.uid)
-                        .collection('vehicles').add(newData);
+                        .collection('vehicles').add(payload);
+                    imported++;
                 }
                 
                 hideLoading();
-                showNotification(`تم استيراد ${data.vehicles.length} مركبة بنجاح`, 'success');
+                
+                const message = skipped > 0 
+                    ? `تم استيراد ${imported} مركبة وتجاهل ${skipped} بسبب التحقق من البيانات`
+                    : `تم استيراد ${imported} مركبة بنجاح`;
+                showNotification(message, skipped > 0 ? 'warning' : 'success');
                 
             } catch (error) {
                 console.error('Import Error:', error);
