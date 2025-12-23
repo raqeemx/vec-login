@@ -2267,6 +2267,11 @@
             ]);
         }
 
+        function isTimeoutError(error) {
+            const message = (error?.message || '').toLowerCase();
+            return message.includes('timeout') || message.includes('deadline') || message.includes('مهلة');
+        }
+
         function waitForUploadCompletion(uploadTask, timeoutMs) {
             return Promise.race([
                 new Promise((resolve, reject) => {
@@ -2301,11 +2306,18 @@
             if (error.message && error.message.includes('انتهت مهلة')) {
                 return error.message;
             }
+            if (isTimeoutError(error)) {
+                return 'انتهت مهلة رفع الصور. يرجى المحاولة مرة أخرى أو تقليل حجم الملف.';
+            }
             return error.message || 'تعذر رفع الصور. حاول مجدداً.';
         }
 
-        async function uploadPhotos(vehicleId) {
+        async function uploadPhotos(vehicleId, existingPhotos = []) {
+            const safeExistingPhotos = Array.isArray(existingPhotos)
+                ? existingPhotos.map(photo => isSafePhotoUrl(photo) ? photo : null)
+                : [];
             const photoUrls = [];
+            const warnings = [];
             
             for (let i = 0; i < vehiclePhotos.length; i++) {
                 const entry = vehiclePhotos[i];
@@ -2317,6 +2329,7 @@
                 }
 
                 if (entry.file) {
+                    const fallbackPhoto = safeExistingPhotos[i];
                     const extension = (entry.file.name.split('.').pop() || 'jpg').replace(/[^a-zA-Z0-9]/g, '') || 'jpg';
                     const ref = storage.ref(`users/${currentUser.uid}/vehicles/${vehicleId}/photo_${i}_${Date.now()}.${extension}`);
                     
@@ -2329,12 +2342,28 @@
                         photoUrls.push(url);
                     } catch (error) {
                         console.error('Photo upload failed:', error);
-                        throw new Error(getUploadErrorMessage(error));
+                        const timeoutError = isTimeoutError(error);
+
+                        if (timeoutError && fallbackPhoto) {
+                            console.warn('Upload timed out, keeping existing photo for slot', i);
+                            photoUrls.push(fallbackPhoto);
+                            warnings.push('انتهت مهلة رفع إحدى الصور وتم الاحتفاظ بالصورة الحالية.');
+                            continue;
+                        }
+
+                        if (timeoutError) {
+                            warnings.push('انتهت مهلة رفع إحدى الصور. تم حفظ البيانات بدون هذه الصورة.');
+                            continue;
+                        }
+
+                        const normalizedError = new Error(getUploadErrorMessage(error));
+                        normalizedError.isTimeout = timeoutError;
+                        throw normalizedError;
                     }
                 }
             }
 
-            return photoUrls;
+            return { photoUrls, warnings };
         }
 
         async function saveVehicle() {
@@ -2380,6 +2409,12 @@
             showLoading(editId ? 'جاري التحديث...' : 'جاري الحفظ...');
 
             try {
+                const existingPhotos = vehicles.find(v => v.id === editId)?.photos || [];
+                const safeExistingPhotos = Array.isArray(existingPhotos)
+                    ? existingPhotos.map(photo => isSafePhotoUrl(photo) ? photo : null)
+                    : [];
+                const cleanedExistingPhotos = safeExistingPhotos.filter(Boolean);
+
                 let vehicleRef;
                 let vehicleId = editId;
 
@@ -2394,7 +2429,21 @@
 
                 const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp();
                 const nowTimestamp = firebase.firestore.Timestamp.now();
-                const photoUrls = await uploadPhotos(vehicleId);
+                
+                let photoUrls = cleanedExistingPhotos;
+                let uploadWarnings = [];
+                try {
+                    const uploadResult = await uploadPhotos(vehicleId, safeExistingPhotos);
+                    photoUrls = uploadResult.photoUrls;
+                    uploadWarnings = uploadResult.warnings;
+                } catch (error) {
+                    if (error.isTimeout && cleanedExistingPhotos.length) {
+                        showNotification('انتهت مهلة رفع الصور، تم الاحتفاظ بالصور الحالية وحفظ البيانات المحدثة.', 'warning');
+                        photoUrls = cleanedExistingPhotos;
+                    } else {
+                        throw error;
+                    }
+                }
 
                 const payload = {
                     ...data,
@@ -2409,6 +2458,10 @@
                     payload.createdAt = serverTimestamp;
                     await vehicleRef.set(payload);
                     showNotification('تم إضافة المركبة بنجاح', 'success');
+                }
+
+                if (uploadWarnings.length) {
+                    uploadWarnings.forEach(message => showNotification(message, 'warning'));
                 }
 
                 updateLocalVehiclesAfterSave(vehicleId, data, photoUrls, Boolean(editId), nowTimestamp);
