@@ -1,0 +1,17 @@
+// ========================================
+// 🔒 Firebase Storage Rules
+// قواعد أمان تخزين الصور
+// ========================================
+//
+// انسخ هذه القواعد إلى Firebase Console > Storage > Rules
+// Copy these rules to Firebase Console > Storage > Rules
+
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // السماح للمستخدم بقراءة/كتابة ملفاته فقط
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

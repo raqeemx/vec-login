@@ -1658,7 +1658,7 @@
         let unsubscribeSnapshot = null;
         let authTimeout = null;
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-        const UPLOAD_TIMEOUT = 20000; // 20 seconds safety timeout for photo uploads
+        const UPLOAD_TIMEOUT = 45000; // 45 seconds safety timeout for photo uploads on slow connections
 
         // ========================================
         // Authentication
@@ -2267,6 +2267,43 @@
             ]);
         }
 
+        function waitForUploadCompletion(uploadTask, timeoutMs) {
+            return Promise.race([
+                new Promise((resolve, reject) => {
+                    const unsubscribe = uploadTask.on(
+                        'state_changed',
+                        null,
+                        (error) => {
+                            unsubscribe();
+                            reject(error);
+                        },
+                        () => {
+                            unsubscribe();
+                            resolve(uploadTask.snapshot);
+                        }
+                    );
+                }),
+                new Promise((_, reject) => setTimeout(
+                    () => reject(new Error('انتهت مهلة رفع الصورة')),
+                    timeoutMs
+                ))
+            ]);
+        }
+
+        function getUploadErrorMessage(error) {
+            if (!error) return 'تعذر رفع الصور. حاول مجدداً.';
+            if (error.code === 'storage/unauthorized') {
+                return 'لا توجد صلاحية لرفع الصور. يرجى تحديث قواعد Firebase Storage.';
+            }
+            if (error.code === 'storage/quota-exceeded') {
+                return 'تم تجاوز حصة Firebase Storage. قم بتفريغ المساحة أو ترقية الخطة.';
+            }
+            if (error.message && error.message.includes('انتهت مهلة')) {
+                return error.message;
+            }
+            return error.message || 'تعذر رفع الصور. حاول مجدداً.';
+        }
+
         async function uploadPhotos(vehicleId) {
             const photoUrls = [];
             
@@ -2284,13 +2321,15 @@
                     const ref = storage.ref(`users/${currentUser.uid}/vehicles/${vehicleId}/photo_${i}_${Date.now()}.${extension}`);
                     
                     try {
-                        const uploadTask = ref.put(entry.file);
-                        const snapshot = await withTimeout(uploadTask, UPLOAD_TIMEOUT, 'انتهت مهلة رفع الصورة');
+                        const uploadTask = ref.put(entry.file, {
+                            contentType: entry.file.type || 'image/jpeg'
+                        });
+                        const snapshot = await waitForUploadCompletion(uploadTask, UPLOAD_TIMEOUT);
                         const url = await withTimeout(snapshot.ref.getDownloadURL(), UPLOAD_TIMEOUT, 'انتهت مهلة جلب رابط الصورة');
                         photoUrls.push(url);
                     } catch (error) {
                         console.error('Photo upload failed:', error);
-                        showNotification('تعذر رفع إحدى الصور، سيتم المتابعة بدونها', 'warning');
+                        throw new Error(getUploadErrorMessage(error));
                     }
                 }
             }

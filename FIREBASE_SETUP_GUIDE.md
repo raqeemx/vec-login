@@ -131,6 +131,22 @@ service cloud.firestore {
 2. سيتم توجيهك لإنشاء الفهرس تلقائياً
 3. انقر **"Create index"**
 
+### الخطوة 3.4: إعداد Firebase Storage لرفع الصور
+1. في القائمة الجانبية، اذهب إلى **Build > Storage**
+2. افتح تبويب **Rules**
+3. استبدل القواعد بالمحتوى الموجود في ملف `storage.rules` من المستودع:
+   ```
+   rules_version = '2';
+   service firebase.storage {
+     match /b/{bucket}/o {
+       match /users/{userId}/{allPaths=**} {
+         allow read, write: if request.auth != null && request.auth.uid == userId;
+       }
+     }
+   }
+   ```
+4. انقر **"Publish"**
+
 ---
 
 ## 4. الحصول على إعدادات التكوين
@@ -257,6 +273,10 @@ firebase deploy --only hosting
 ### ❌ خطأ: "auth/network-request-failed"
 **السبب**: مشكلة في الاتصال
 **الحل**: تحقق من الاتصال بالإنترنت وحاول مجدداً
+
+### ❌ خطأ: "storage/unauthorized" أو تعذر رفع الصور
+**السبب**: قواعد Firebase Storage غير محدثة أو انتهاء صلاحية القواعد الافتراضية بعد 30 يوماً
+**الحل**: انسخ القواعد من ملف `storage.rules` إلى تبويب Storage > Rules ثم انقر **Publish**
 
 ---
 
