@@ -2317,6 +2317,7 @@
                 ? existingPhotos.map(photo => isSafePhotoUrl(photo) ? photo : null)
                 : [];
             const photoUrls = [];
+            const warnings = [];
             
             for (let i = 0; i < vehiclePhotos.length; i++) {
                 const entry = vehiclePhotos[i];
@@ -2356,7 +2357,7 @@
                 }
             }
 
-            return photoUrls;
+            return { photoUrls, warnings };
         }
 
         async function saveVehicle() {
@@ -2448,6 +2449,10 @@
                     payload.createdAt = serverTimestamp;
                     await vehicleRef.set(payload);
                     showNotification('تم إضافة المركبة بنجاح', 'success');
+                }
+
+                if (uploadWarnings.length) {
+                    uploadWarnings.forEach(message => showNotification(message, 'warning'));
                 }
 
                 updateLocalVehiclesAfterSave(vehicleId, data, photoUrls, Boolean(editId), nowTimestamp);
