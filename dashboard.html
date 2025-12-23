@@ -2347,12 +2347,6 @@
                         if (timeoutError && fallbackPhoto) {
                             console.warn('Upload timed out, keeping existing photo for slot', i);
                             photoUrls.push(fallbackPhoto);
-                            warnings.push('انتهت مهلة رفع إحدى الصور وتم الاحتفاظ بالصورة الحالية.');
-                            continue;
-                        }
-
-                        if (timeoutError) {
-                            warnings.push('انتهت مهلة رفع إحدى الصور. تم حفظ البيانات بدون هذه الصورة.');
                             continue;
                         }
 
@@ -2431,11 +2425,8 @@
                 const nowTimestamp = firebase.firestore.Timestamp.now();
                 
                 let photoUrls = cleanedExistingPhotos;
-                let uploadWarnings = [];
                 try {
-                    const uploadResult = await uploadPhotos(vehicleId, safeExistingPhotos);
-                    photoUrls = uploadResult.photoUrls;
-                    uploadWarnings = uploadResult.warnings;
+                    photoUrls = await uploadPhotos(vehicleId, safeExistingPhotos);
                 } catch (error) {
                     if (error.isTimeout && cleanedExistingPhotos.length) {
                         showNotification('انتهت مهلة رفع الصور، تم الاحتفاظ بالصور الحالية وحفظ البيانات المحدثة.', 'warning');
