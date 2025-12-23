@@ -1932,8 +1932,20 @@
         }
 
         async function saveVehicle() {
+            const form = document.getElementById('vehicleForm');
+            if (!form) return;
+
+            if (!form.reportValidity()) {
+                showNotification('يرجى تعبئة الحقول المطلوبة قبل الحفظ', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                showNotification('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى', 'error');
+                return;
+            }
+
             const editId = document.getElementById('editId').value;
-            
             const data = {
                 contractNo: document.getElementById('contractNo').value.trim(),
                 vin: document.getElementById('vin').value.trim(),
@@ -1952,13 +1964,19 @@
                 recommendation: document.getElementById('recommendation').value,
                 notes: document.getElementById('notes').value.trim()
             };
-            
+
+            const validationError = validateVehiclePayload(data);
+            if (validationError) {
+                showNotification(validationError, 'error');
+                return;
+            }
+
             showLoading(editId ? 'جاري التحديث...' : 'جاري الحفظ...');
-            
+
             try {
                 let vehicleRef;
                 let vehicleId = editId;
-                
+
                 if (vehicleId) {
                     vehicleRef = db.collection('users').doc(currentUser.uid)
                         .collection('vehicles').doc(vehicleId);
@@ -1968,31 +1986,49 @@
                     vehicleId = vehicleRef.id;
                 }
 
-                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+                const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp();
+                const nowTimestamp = firebase.firestore.Timestamp.now();
                 const photoUrls = await uploadPhotos(vehicleId);
 
                 const payload = {
                     ...data,
                     photos: photoUrls,
-                    updatedAt: timestamp
+                    updatedAt: serverTimestamp
                 };
 
                 if (editId) {
                     await vehicleRef.update(payload);
                     showNotification('تم تحديث المركبة بنجاح', 'success');
                 } else {
-                    payload.createdAt = timestamp;
+                    payload.createdAt = serverTimestamp;
                     await vehicleRef.set(payload);
                     showNotification('تم إضافة المركبة بنجاح', 'success');
                 }
-                
+
+                updateLocalVehiclesAfterSave(vehicleId, data, photoUrls, Boolean(editId), nowTimestamp);
                 hideForm();
-                hideLoading();
             } catch (error) {
                 console.error('Save Error:', error);
-                hideLoading();
                 showNotification('خطأ في الحفظ: ' + error.message, 'error');
+            } finally {
+                hideLoading();
             }
+        }
+
+        function updateLocalVehiclesAfterSave(vehicleId, data, photos, isEdit, timestamp) {
+            const existing = vehicles.find(v => v.id === vehicleId) || {};
+            const updatedVehicle = {
+                ...existing,
+                ...data,
+                id: vehicleId,
+                photos: photos,
+                createdAt: isEdit ? (existing.createdAt || timestamp) : timestamp,
+                updatedAt: timestamp
+            };
+
+            vehicles = [updatedVehicle, ...vehicles.filter(v => v.id !== vehicleId)];
+            applyFilters();
+            updateStats();
         }
 
         // ========================================
