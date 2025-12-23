@@ -1104,6 +1104,180 @@
         .file-input-hidden {
             display: none;
         }
+
+        /* Insights */
+        .insights-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .insight-card {
+            background: white;
+            padding: 18px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            display: grid;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark-mode .insight-card {
+            background: #1f2937;
+            color: white;
+        }
+
+        .insight-card .label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+
+        body.dark-mode .insight-card .label {
+            color: #cbd5e1;
+        }
+
+        .insight-card .value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insight-card .trend {
+            font-size: 0.85rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .insight-icon {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.16), rgba(118, 75, 162, 0.16));
+            color: var(--primary);
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            font-size: 1.2rem;
+        }
+
+        body.dark-mode .insight-icon {
+            color: #c4d4ff;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .distribution-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            margin-bottom: 25px;
+        }
+
+        body.dark-mode .distribution-panel {
+            background: #1f2937;
+            color: white;
+        }
+
+        .progress-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 70px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--gray-200);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar span {
+            display: block;
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        body.dark-mode .progress-bar {
+            background: #374151;
+        }
+
+        .timeline-section {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            margin-bottom: 25px;
+        }
+
+        body.dark-mode .timeline-section {
+            background: #1f2937;
+            color: white;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 12px;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+
+        body.dark-mode .timeline-item {
+            border-color: #374151;
+        }
+
+        .timeline-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 1rem;
+        }
+
+        .timeline-meta {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+
+        body.dark-mode .timeline-meta {
+            color: #cbd5e1;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            font-size: 0.85rem;
+        }
+
+        body.dark-mode .chip {
+            background: #374151;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -1173,6 +1347,55 @@
                 </button>
             </div>
 
+            <div class="insights-wrapper">
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="label">متوسط قيمة السوق</div>
+                    <div class="value" id="avgMarketValue">--</div>
+                    <div class="trend" id="valueTrend"><i class="fas fa-arrow-up"></i> جاهز للتصدير</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-star-half-alt"></i></div>
+                    <div class="label">أكثر تقييم شيوعاً</div>
+                    <div class="value" id="commonRating">--</div>
+                    <div class="trend" style="color: var(--info);" id="ratingSummary"><i class="fas fa-equals"></i> تحديث دوري</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-warehouse"></i></div>
+                    <div class="label">الصانع الأبرز</div>
+                    <div class="value" id="topMake">--</div>
+                    <div class="trend" style="color: var(--warning);" id="totalPhotos"><i class="fas fa-camera"></i> 0 صورة</div>
+                </div>
+            </div>
+
+            <div class="distribution-panel">
+                <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-adjust"></i> توزيع التقييمات
+                </h3>
+                <div id="ratingBreakdown">
+                    <div class="progress-row">
+                        <span>ممتاز</span>
+                        <div class="progress-bar"><span id="progressExcellent" style="background:#10b981; width:0%;"></span></div>
+                        <span id="countExcellent">0</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>جيد</span>
+                        <div class="progress-bar"><span id="progressGood" style="background:#3b82f6; width:0%;"></span></div>
+                        <span id="countGood">0</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>مقبول</span>
+                        <div class="progress-bar"><span id="progressFair" style="background:#f59e0b; width:0%;"></span></div>
+                        <span id="countFair">0</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>ضعيف</span>
+                        <div class="progress-bar"><span id="progressPoor" style="background:#ef4444; width:0%;"></span></div>
+                        <span id="countPoor">0</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Search & Filter Section -->
             <div class="search-filter-section">
                 <div class="search-filter-grid">
@@ -1231,6 +1454,22 @@
                     <button type="button" class="btn btn-secondary" onclick="resetFilters()" style="padding: 8px 15px; font-size: 0.85rem;">
                         <i class="fas fa-redo"></i> إعادة تعيين
                     </button>
+                </div>
+            </div>
+
+            <div class="timeline-section">
+                <h3 style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-history"></i> آخر النشاطات
+                </h3>
+                <div id="timelineList">
+                    <div class="timeline-item">
+                        <div class="timeline-icon"><i class="fas fa-info-circle"></i></div>
+                        <div>
+                            <strong>لا يوجد نشاط بعد</strong>
+                            <div class="timeline-meta">عند إضافة المركبات ستظهر هنا</div>
+                        </div>
+                        <span class="chip"><i class="fas fa-clock"></i> الآن</span>
+                    </div>
                 </div>
             </div>
 
@@ -1551,6 +1790,106 @@
             
             document.getElementById('totalVehicles').textContent = total;
             document.getElementById('totalValue').textContent = totalValue.toLocaleString();
+            updateAnalytics();
+        }
+
+        function updateAnalytics() {
+            const breakdown = ['excellent', 'good', 'fair', 'poor'];
+            const counts = breakdown.reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
+            let totalValue = 0;
+            let photoTotal = 0;
+            const makeCount = {};
+
+            vehicles.forEach(v => {
+                const rating = v.overallRating || 'good';
+                counts[rating] = (counts[rating] || 0) + 1;
+                totalValue += parseFloat(v.marketValue) || 0;
+                if (Array.isArray(v.photos)) {
+                    photoTotal += v.photos.filter(isSafePhotoUrl).length;
+                }
+                if (v.make) {
+                    makeCount[v.make] = (makeCount[v.make] || 0) + 1;
+                }
+            });
+
+            const total = vehicles.length || 1;
+            const avgValue = Math.round(totalValue / total);
+            const topMake = Object.entries(makeCount).sort((a, b) => b[1] - a[1])[0]?.[0] || '—';
+            const popularRating = breakdown.sort((a, b) => (counts[b] || 0) - (counts[a] || 0))[0];
+
+            updateDistribution(counts, vehicles.length);
+            renderInsights(avgValue, topMake, photoTotal, popularRating);
+            renderTimeline();
+        }
+
+        function renderInsights(avgValue, topMake, photoTotal, popularRating) {
+            const avgEl = document.getElementById('avgMarketValue');
+            const makeEl = document.getElementById('topMake');
+            const photoEl = document.getElementById('totalPhotos');
+            const ratingEl = document.getElementById('commonRating');
+            const ratingSummary = document.getElementById('ratingSummary');
+
+            if (avgEl) avgEl.textContent = `${avgValue.toLocaleString()} ر.س`;
+            if (makeEl) makeEl.textContent = topMake;
+            if (photoEl) photoEl.innerHTML = `<i class="fas fa-camera"></i> ${photoTotal} صورة`;
+            if (ratingEl) ratingEl.textContent = getRatingText(popularRating || '');
+            if (ratingSummary) ratingSummary.innerHTML = `<i class="fas fa-sync-alt"></i> ${vehicles.length} مركبة متزامنة`;
+        }
+
+        function updateDistribution(counts, total) {
+            const safeTotal = Math.max(total, 1);
+            const map = {
+                excellent: { bar: 'progressExcellent', count: 'countExcellent' },
+                good: { bar: 'progressGood', count: 'countGood' },
+                fair: { bar: 'progressFair', count: 'countFair' },
+                poor: { bar: 'progressPoor', count: 'countPoor' }
+            };
+
+            Object.entries(map).forEach(([key, ids]) => {
+                const percentage = Math.round(((counts[key] || 0) / safeTotal) * 100);
+                const bar = document.getElementById(ids.bar);
+                const count = document.getElementById(ids.count);
+                if (bar) bar.style.width = `${percentage}%`;
+                if (count) count.textContent = counts[key] || 0;
+            });
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timelineList');
+            if (!container) return;
+
+            if (!vehicles.length) {
+                container.innerHTML = `
+                    <div class="timeline-item">
+                        <div class="timeline-icon"><i class="fas fa-info-circle"></i></div>
+                        <div>
+                            <strong>لا يوجد نشاط بعد</strong>
+                            <div class="timeline-meta">عند إضافة المركبات ستظهر هنا</div>
+                        </div>
+                        <span class="chip"><i class="fas fa-clock"></i> الآن</span>
+                    </div>
+                `;
+                return;
+            }
+
+            const recent = [...vehicles]
+                .sort((a, b) => (b.createdAt?.toDate?.() || 0) - (a.createdAt?.toDate?.() || 0))
+                .slice(0, 5);
+
+            container.innerHTML = recent.map(v => {
+                const date = formatDate(v.createdAt);
+                const rating = getRatingText(v.overallRating);
+                return `
+                    <div class="timeline-item">
+                        <div class="timeline-icon"><i class="fas fa-car-side"></i></div>
+                        <div>
+                            <strong>${v.make || 'مركبة'} ${v.model || ''}</strong>
+                            <div class="timeline-meta">${rating} • ${v.contractNo || 'بدون عقد'}</div>
+                        </div>
+                        <span class="chip"><i class="fas fa-clock"></i> ${date}</span>
+                    </div>
+                `;
+            }).join('');
         }
 
         // ========================================
@@ -1776,6 +2115,16 @@
                 'electric': 'كهربائي'
             };
             return fuels[fuel] || 'غير محدد';
+        }
+
+        function formatDate(value) {
+            if (value?.toDate) {
+                return value.toDate().toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            }
+            if (typeof value === 'string') {
+                return new Date(value).toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            }
+            return '—';
         }
 
         // ========================================
