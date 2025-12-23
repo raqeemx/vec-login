@@ -2554,9 +2554,11 @@
 
         function isSafePhotoUrl(url) {
             if (typeof url !== 'string') return false;
-            if (url.startsWith('data:')) return false;
-            if (!/^https?:\/\//i.test(url)) return false;
-            return url.length < 500;
+            const trimmed = url.trim();
+            if (!trimmed) return false;
+            if (trimmed.startsWith('data:')) return false;
+            if (!/^https?:\/\//i.test(trimmed)) return false;
+            return trimmed.length <= 2048;
         }
 
         function validateVehiclePayload(vehicle) {
