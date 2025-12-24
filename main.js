@@ -9,9 +9,6 @@
  * - Advanced validation
  * - Export to PDF, Excel, JSON
  * - Image upload with validation
- *
- * ملاحظة: هذا الملف يعمل كوحدة مستقلة تعتمد على المتصفح و localStorage
- * ولا يرتبط بتدفق Firebase المستخدم في واجهات تسجيل الدخول أو لوحة التحكم.
  */
 
 // ===== Global Variables =====

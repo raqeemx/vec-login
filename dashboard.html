@@ -11,8 +11,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    <script src="firebase-config.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1643,10 +1641,22 @@
     <div id="notificationContainer"></div>
 
     <script>
+        // ========================================
+        // Firebase Configuration
+        // ========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyA7B27LIH9FPZAsMKr5lvm2AIa3ZkZNOUo",
+            authDomain: "vec-login-58dea.firebaseapp.com",
+            projectId: "vec-login-58dea",
+            storageBucket: "vec-login-58dea.firebasestorage.app",
+            messagingSenderId: "651347381212",
+            appId: "1:651347381212:web:dc7eba2bbf69532e13dd19",
+            measurementId: "G-P9Q2KBSNQH"
+        };
+
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
         // ========================================
         // Global Variables
@@ -2177,7 +2187,7 @@
             document.getElementById('notes').value = vehicle.notes || '';
             
             // Load photos
-            vehiclePhotos = (vehicle.photos || []).slice(0, 3).map(url => url ? { url } : null);
+            vehiclePhotos = vehicle.photos || [null, null, null];
             updatePhotoBoxes();
             
             document.getElementById('formSection').scrollIntoView({ behavior: 'smooth' });
@@ -2204,35 +2214,27 @@
             
             const reader = new FileReader();
             reader.onload = (e) => {
-                vehiclePhotos[index] = { file, preview: e.target.result };
+                vehiclePhotos[index] = e.target.result;
                 updatePhotoBoxes();
             };
             reader.readAsDataURL(file);
         }
 
         function removePhoto(index, event) {
-            if (event) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
+            event.stopPropagation();
+            event.preventDefault();
             vehiclePhotos[index] = null;
             updatePhotoBoxes();
-        }
-
-        function getPhotoPreview(photoEntry) {
-            if (!photoEntry) return null;
-            return photoEntry.preview || photoEntry.url || null;
         }
 
         function updatePhotoBoxes() {
             for (let i = 0; i < 3; i++) {
                 const box = document.getElementById(`photoBox${i}`);
-                const previewSrc = getPhotoPreview(vehiclePhotos[i]);
-                if (previewSrc) {
+                if (vehiclePhotos[i]) {
                     box.classList.add('has-photo');
                     box.innerHTML = `
                         <input type="file" accept="image/*" onchange="handlePhotoUpload(${i}, event)">
-                        <img src="${previewSrc}" alt="صورة ${i+1}" onclick="openPhotoModal('${previewSrc}')">
+                        <img src="${vehiclePhotos[i]}" alt="صورة ${i+1}" onclick="openPhotoModal('${vehiclePhotos[i]}')">
                         <button type="button" class="remove-photo" onclick="removePhoto(${i}, event)"><i class="fas fa-times"></i></button>
                     `;
                 } else {
@@ -2248,6 +2250,7 @@
         }
 
         function openPhotoModal(src) {
+            event.stopPropagation();
             document.getElementById('photoModalImg').src = src;
             document.getElementById('photoModal').classList.add('show');
         }
@@ -2402,7 +2405,9 @@
                 overallRating: document.getElementById('overallRating').value,
                 marketValue: document.getElementById('marketValue').value,
                 recommendation: document.getElementById('recommendation').value,
-                notes: document.getElementById('notes').value.trim()
+                notes: document.getElementById('notes').value.trim(),
+                photos: vehiclePhotos.filter(p => p !== null),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             const validationError = validateVehiclePayload(data);
@@ -2458,7 +2463,8 @@
                 };
 
                 if (editId) {
-                    await vehicleRef.update(payload);
+                    await db.collection('users').doc(currentUser.uid)
+                        .collection('vehicles').doc(editId).update(data);
                     showNotification('تم تحديث المركبة بنجاح', 'success');
                 } else {
                     payload.createdAt = serverTimestamp;
@@ -2764,33 +2770,18 @@
                     await batch.commit();
                 }
                 
-                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
-                let imported = 0;
-                let skipped = 0;
-                
-                for (const [index, vehicle] of data.vehicles.entries()) {
-                    const validationError = validateVehiclePayload(vehicle);
-                    if (validationError) {
-                        console.warn(`Skipping vehicle #${index + 1}: ${validationError}`);
-                        skipped++;
-                        continue;
-                    }
-
-                    const payload = sanitizeVehiclePayload(vehicle);
-                    payload.createdAt = timestamp;
-                    payload.updatedAt = timestamp;
-
+                // Import new
+                for (const v of data.vehicles) {
+                    const newData = { ...v };
+                    delete newData.id;
+                    newData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    newData.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
                     await db.collection('users').doc(currentUser.uid)
-                        .collection('vehicles').add(payload);
-                    imported++;
+                        .collection('vehicles').add(newData);
                 }
                 
                 hideLoading();
-                
-                const message = skipped > 0 
-                    ? `تم استيراد ${imported} مركبة وتجاهل ${skipped} بسبب التحقق من البيانات`
-                    : `تم استيراد ${imported} مركبة بنجاح`;
-                showNotification(message, skipped > 0 ? 'warning' : 'success');
+                showNotification(`تم استيراد ${data.vehicles.length} مركبة بنجاح`, 'success');
                 
             } catch (error) {
                 console.error('Import Error:', error);
