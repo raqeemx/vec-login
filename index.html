@@ -98,6 +98,12 @@
             box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
 
+        .status-card.offline {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(239, 68, 68, 0.45);
+            color: #fee2e2;
+        }
+
         .status-card .label {
             font-size: 0.85rem;
             opacity: 0.9;
@@ -112,12 +118,20 @@
             letter-spacing: 0.3px;
         }
 
+        .status-card.offline .value {
+            color: #fecdd3;
+        }
+
         .pulse-dot {
             width: 10px;
             height: 10px;
             background: #10b981;
             border-radius: 50%;
             position: relative;
+        }
+
+        .status-card.offline .pulse-dot {
+            background: #ef4444;
         }
 
         .pulse-dot::after {
@@ -741,9 +755,9 @@
         </div>
 
         <div class="system-status" aria-label="مؤشرات جاهزية المنصة">
-            <div class="status-card">
+            <div class="status-card" id="systemStatusCard">
                 <div class="label">جاهزية النظام</div>
-                <div class="value"><span class="pulse-dot"></span> متصل</div>
+                <div class="value" id="systemStatusValue"><span class="pulse-dot"></span> متصل</div>
                 <small id="statusTimestamp">آخر تحديث الآن</small>
             </div>
             <div class="status-card">
@@ -1014,9 +1028,9 @@
         // 🔥 Firebase Configuration
         // ========================================
         // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        let auth = null;
+        let db = null;
+        let firebaseReady = false;
 
         // ========================================
         // Global Variables
@@ -1181,12 +1195,100 @@
             buttons.forEach(btn => btn.disabled = disabled);
         }
 
+        function ensureFirebaseReady() {
+            if (!firebaseReady || !auth || !db) {
+                showAlert('النظام غير جاهز حالياً. يرجى تحديث الصفحة أو التحقق من الإعدادات.', 'warning');
+                return false;
+            }
+            return true;
+        }
+
+        function updateSystemStatus(state, text) {
+            const card = document.getElementById('systemStatusCard');
+            const value = document.getElementById('systemStatusValue');
+            if (!card || !value) return;
+
+            card.classList.toggle('offline', state !== 'online');
+            value.innerHTML = state === 'online'
+                ? `<span class="pulse-dot"></span> ${text || 'متصل'}`
+                : `<i class="fas fa-unlink"></i> ${text || 'غير متصل'}`;
+        }
+
+        function validateFirebaseConfig() {
+            const requiredKeys = ['apiKey', 'authDomain', 'projectId', 'storageBucket', 'messagingSenderId', 'appId'];
+            const missing = requiredKeys.filter(key => !firebaseConfig || !firebaseConfig[key]);
+            if (missing.length) {
+                throw new Error(`مفاتيح Firebase مفقودة: ${missing.join(', ')}`);
+            }
+        }
+
+        function bootstrapFirebase() {
+            try {
+                validateFirebaseConfig();
+                if (firebase.apps && firebase.apps.length) {
+                    firebase.app();
+                } else {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                auth = firebase.auth();
+                db = firebase.firestore();
+                firebaseReady = true;
+                attachAuthListener();
+                updateSystemStatus('online', 'متصل');
+                updateAuthButtonsState();
+            } catch (error) {
+                console.error('Firebase init error:', error);
+                firebaseReady = false;
+                updateSystemStatus('offline', 'خطأ في الإعدادات');
+                showAlert('تعذر تهيئة الاتصال بالسحابة. تحقق من إعدادات Firebase ثم أعد المحاولة.', 'error');
+                disableButtons(true);
+            }
+        }
+
+        function updateAuthButtonsState() {
+            const shouldDisable = !firebaseReady || !navigator.onLine || isProcessingAuth;
+            disableButtons(shouldDisable);
+        }
+
+        function setupConnectionMonitor() {
+            const applyState = (online) => {
+                const healthy = firebaseReady && online;
+                const statusText = healthy
+                    ? 'متصل'
+                    : (online ? 'في انتظار تهيئة الاتصال' : 'غير متصل بالإنترنت');
+
+                if (online) {
+                    updateSystemStatus(healthy ? 'online' : 'offline', statusText);
+                    if (!isProcessingAuth) hideAlert();
+                } else {
+                    updateSystemStatus('offline', statusText);
+                    showAlert('الاتصال بالإنترنت غير متوفر حالياً. بعض العمليات متوقفة.', 'warning');
+                }
+                updateAuthButtonsState();
+            };
+
+            window.addEventListener('online', () => applyState(true));
+            window.addEventListener('offline', () => applyState(false));
+            applyState(navigator.onLine);
+        }
+
         // ========================================
         // Login Handler
         // ========================================
         async function handleLogin(event) {
             event.preventDefault();
             hideAlert();
+
+            if (!navigator.onLine) {
+                showAlert('لا يمكن تسجيل الدخول دون اتصال بالإنترنت', 'warning');
+                updateAuthButtonsState();
+                return;
+            }
+            
+            if (!ensureFirebaseReady()) {
+                updateAuthButtonsState();
+                return;
+            }
             
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
@@ -1219,8 +1321,8 @@
                 
             } catch (error) {
                 hideLoading();
-                disableButtons(false);
                 isProcessingAuth = false;
+                updateAuthButtonsState();
                 handleAuthError(error);
             }
         }
@@ -1231,6 +1333,17 @@
         async function handleRegister(event) {
             event.preventDefault();
             hideAlert();
+
+            if (!navigator.onLine) {
+                showAlert('الاتصال بالإنترنت مطلوب لإنشاء حساب جديد', 'warning');
+                updateAuthButtonsState();
+                return;
+            }
+            
+            if (!ensureFirebaseReady()) {
+                updateAuthButtonsState();
+                return;
+            }
             
             const name = document.getElementById('registerName').value.trim();
             const email = document.getElementById('registerEmail').value.trim();
@@ -1277,8 +1390,8 @@
                 
             } catch (error) {
                 hideLoading();
-                disableButtons(false);
                 isProcessingAuth = false;
+                updateAuthButtonsState();
                 handleAuthError(error);
             }
         }
@@ -1289,6 +1402,17 @@
         async function signInWithGoogle() {
             if (isProcessingAuth) {
                 console.log('Auth already in progress, ignoring...');
+                return;
+            }
+
+            if (!navigator.onLine) {
+                showAlert('الاتصال بالإنترنت مطلوب لتسجيل الدخول عبر Google', 'warning');
+                updateAuthButtonsState();
+                return;
+            }
+            
+            if (!ensureFirebaseReady()) {
+                updateAuthButtonsState();
                 return;
             }
             
@@ -1350,8 +1474,8 @@
             } catch (error) {
                 console.error('Google Sign In Error:', error);
                 hideLoading();
-                disableButtons(false);
                 isProcessingAuth = false;
+                updateAuthButtonsState();
                 
                 if (error.code === 'auth/popup-closed-by-user') {
                     showAlert('تم إغلاق نافذة تسجيل الدخول', 'warning');
@@ -1391,6 +1515,17 @@
         async function signInWithMicrosoft() {
             if (isProcessingAuth) {
                 console.log('Auth already in progress, ignoring...');
+                return;
+            }
+
+            if (!navigator.onLine) {
+                showAlert('الاتصال بالإنترنت مطلوب لتسجيل الدخول عبر Microsoft', 'warning');
+                updateAuthButtonsState();
+                return;
+            }
+            
+            if (!ensureFirebaseReady()) {
+                updateAuthButtonsState();
                 return;
             }
             
@@ -1441,8 +1576,8 @@
             } catch (error) {
                 console.error('Microsoft Sign In Error:', error);
                 hideLoading();
-                disableButtons(false);
                 isProcessingAuth = false;
+                updateAuthButtonsState();
                 
                 if (error.code === 'auth/popup-closed-by-user') {
                     showAlert('تم إغلاق نافذة تسجيل الدخول', 'warning');
@@ -1477,6 +1612,17 @@
         async function handleResetPassword(event) {
             event.preventDefault();
             hideAlert();
+
+            if (!navigator.onLine) {
+                showAlert('الاتصال بالإنترنت مطلوب لإرسال رابط الاستعادة', 'warning');
+                updateAuthButtonsState();
+                return;
+            }
+            
+            if (!ensureFirebaseReady()) {
+                updateAuthButtonsState();
+                return;
+            }
             
             const email = document.getElementById('resetEmail').value.trim();
             
@@ -1494,6 +1640,7 @@
                 document.getElementById('resetForm').style.display = 'none';
             } catch (error) {
                 hideLoading();
+                updateAuthButtonsState();
                 handleAuthError(error);
             }
         }
@@ -1530,41 +1677,41 @@
         // ========================================
         // Auth State Change - COMPLETELY FIXED VERSION
         // ========================================
-        auth.onAuthStateChanged(user => {
-            console.log('Auth state changed:', user ? user.email : 'null', 'isProcessingAuth:', isProcessingAuth);
-            
-            if (user) {
-                // User is signed in
-                if (!isProcessingAuth) {
-                    // User was already signed in (e.g., page refresh while logged in)
-                    console.log('User already signed in, redirecting to dashboard...');
-                    showLoading('جاري التحويل للوحة التحكم...');
-                    setTimeout(() => {
-                        window.location.replace('dashboard.html');
-                    }, 800);
+        function attachAuthListener() {
+            if (!auth) return;
+
+            auth.onAuthStateChanged(user => {
+                console.log('Auth state changed:', user ? user.email : 'null', 'isProcessingAuth:', isProcessingAuth);
+                
+                if (user) {
+                    if (!isProcessingAuth) {
+                        console.log('User already signed in, redirecting to dashboard...');
+                        showLoading('جاري التحويل للوحة التحكم...');
+                        setTimeout(() => {
+                            window.location.replace('dashboard.html');
+                        }, 800);
+                    } else {
+                        console.log('Auth in progress - letting login function handle redirect');
+                    }
                 } else {
-                    // Auth is being processed by login/register functions
-                    // Don't interfere - let those functions handle redirect
-                    console.log('Auth in progress - letting login function handle redirect');
+                    console.log('User not signed in - showing login page');
+                    hideLoading();
+                    updateAuthButtonsState();
                 }
-            } else {
-                // User is signed out
-                console.log('User not signed in - showing login page');
-                hideLoading();
-                disableButtons(false);
-            }
-            
-            authCheckComplete = true;
-        });
+                
+                authCheckComplete = true;
+            });
+        }
 
         // ========================================
         // Initialize
         // ========================================
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Page loaded, checking auth state...');
-            // Forms are ready, buttons should be enabled
-            disableButtons(false);
+            // Forms are ready, buttons should be updated based on connectivity
             initExperienceLayer();
+            setupConnectionMonitor();
+            bootstrapFirebase();
         });
     </script>
 

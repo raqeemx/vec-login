@@ -2192,11 +2192,13 @@
             
             if (file.size > MAX_FILE_SIZE) {
                 showNotification('حجم الصورة يجب أن لا يتجاوز 5MB', 'error');
+                event.target.value = '';
                 return;
             }
 
             if (!file.type.startsWith('image/')) {
                 showNotification('يرجى اختيار ملف صورة صحيح', 'error');
+                event.target.value = '';
                 return;
             }
             
@@ -2346,8 +2348,13 @@
 
                         if (timeoutError && fallbackPhoto) {
                             console.warn('Upload timed out, keeping existing photo for slot', i);
+                            warnings.push(`تم الاحتفاظ بالصورة رقم ${i + 1} بسبب بطء الاتصال.`);
                             photoUrls.push(fallbackPhoto);
                             continue;
+                        }
+
+                        if (timeoutError) {
+                            warnings.push(`انتهت مهلة رفع الصورة رقم ${i + 1}. حاول مرة أخرى بعد تحسين الاتصال.`);
                         }
 
                         const normalizedError = new Error(getUploadErrorMessage(error));
@@ -2425,12 +2432,16 @@
                 const nowTimestamp = firebase.firestore.Timestamp.now();
                 
                 let photoUrls = cleanedExistingPhotos;
+                let uploadWarnings = [];
                 try {
-                    photoUrls = await uploadPhotos(vehicleId, safeExistingPhotos);
+                    const uploadResult = await uploadPhotos(vehicleId, safeExistingPhotos);
+                    photoUrls = uploadResult.photoUrls;
+                    uploadWarnings = uploadResult.warnings || [];
                 } catch (error) {
                     if (error.isTimeout && cleanedExistingPhotos.length) {
                         showNotification('انتهت مهلة رفع الصور، تم الاحتفاظ بالصور الحالية وحفظ البيانات المحدثة.', 'warning');
                         photoUrls = cleanedExistingPhotos;
+                        uploadWarnings.push('تم حفظ البيانات مع الصور الحالية بسبب بطء الاتصال.');
                     } else {
                         throw error;
                     }
