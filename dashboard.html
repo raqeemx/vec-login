@@ -2287,6 +2287,19 @@
             throw lastError;
         }
 
+        async function getDownloadUrlWithRetry(ref, timeoutMs, retries = 1) {
+            let lastError = null;
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                try {
+                    return await withTimeout(ref.getDownloadURL(), timeoutMs, 'انتهت مهلة جلب رابط الصورة');
+                } catch (error) {
+                    lastError = error;
+                    if (!isTimeoutError(error)) break;
+                }
+            }
+            throw lastError;
+        }
+
         function getUploadErrorMessage(error) {
             if (!error) return 'تعذر رفع الصور. حاول مجدداً.';
             if (error.code === 'storage/unauthorized') {
@@ -2329,7 +2342,7 @@
                         const uploadTask = ref.put(entry.file, {
                             contentType: entry.file.type || 'image/jpeg'
                         });
-                        const snapshot = await uploadTask;
+                        const snapshot = await waitForUploadCompletion(uploadTask, UPLOAD_TIMEOUT);
                         const url = await getDownloadUrlWithRetry(snapshot.ref, UPLOAD_TIMEOUT, 1);
                         photoUrls.push(url);
                     } catch (error) {
