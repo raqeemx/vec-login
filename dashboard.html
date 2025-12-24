@@ -2270,7 +2270,15 @@
         }
 
         function waitForUploadCompletion(uploadTask, timeoutMs) {
-            const uploadPromise = uploadTask.then(() => uploadTask.snapshot);
+            const uploadPromise = new Promise((resolve, reject) => {
+                uploadTask.on(
+                    'state_changed',
+                    null,
+                    (error) => reject(error),
+                    () => resolve(uploadTask.snapshot)
+                );
+            });
+
             return withTimeout(uploadPromise, timeoutMs, 'انتهت مهلة رفع الصورة');
         }
 
