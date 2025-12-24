@@ -1658,7 +1658,11 @@
         let unsubscribeSnapshot = null;
         let authTimeout = null;
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-        const UPLOAD_TIMEOUT = 45000; // 45 seconds safety timeout for photo uploads on slow connections
+        const UPLOAD_TIMEOUT = 90000; // 90 seconds safety timeout for photo uploads on slow connections
+
+        function waitForUploadCompletion(uploadTask) {
+            return uploadTask;
+        }
 
         // ========================================
         // Authentication
@@ -2274,27 +2278,17 @@
             return message.includes('timeout') || message.includes('deadline') || message.includes('مهلة');
         }
 
-        function waitForUploadCompletion(uploadTask, timeoutMs) {
-            return Promise.race([
-                new Promise((resolve, reject) => {
-                    const unsubscribe = uploadTask.on(
-                        'state_changed',
-                        null,
-                        (error) => {
-                            unsubscribe();
-                            reject(error);
-                        },
-                        () => {
-                            unsubscribe();
-                            resolve(uploadTask.snapshot);
-                        }
-                    );
-                }),
-                new Promise((_, reject) => setTimeout(
-                    () => reject(new Error('انتهت مهلة رفع الصورة')),
-                    timeoutMs
-                ))
-            ]);
+        async function getDownloadUrlWithRetry(ref, timeoutMs, retries = 1) {
+            let lastError = null;
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                try {
+                    return await withTimeout(ref.getDownloadURL(), timeoutMs, 'انتهت مهلة جلب رابط الصورة');
+                } catch (error) {
+                    lastError = error;
+                    if (!isTimeoutError(error)) break;
+                }
+            }
+            throw lastError;
         }
 
         function getUploadErrorMessage(error) {
@@ -2339,8 +2333,8 @@
                         const uploadTask = ref.put(entry.file, {
                             contentType: entry.file.type || 'image/jpeg'
                         });
-                        const snapshot = await waitForUploadCompletion(uploadTask, UPLOAD_TIMEOUT);
-                        const url = await withTimeout(snapshot.ref.getDownloadURL(), UPLOAD_TIMEOUT, 'انتهت مهلة جلب رابط الصورة');
+                        const snapshot = await waitForUploadCompletion(uploadTask);
+                        const url = await getDownloadUrlWithRetry(snapshot.ref, UPLOAD_TIMEOUT, 1);
                         photoUrls.push(url);
                     } catch (error) {
                         console.error('Photo upload failed:', error);
@@ -2354,11 +2348,12 @@
                         }
 
                         if (timeoutError) {
-                            warnings.push(`انتهت مهلة رفع الصورة رقم ${i + 1}. حاول مرة أخرى بعد تحسين الاتصال.`);
+                            warnings.push(`انتهت مهلة رفع الصورة رقم ${i + 1}. تم حفظ البيانات بدون هذه الصورة.`);
+                            continue;
                         }
 
                         const normalizedError = new Error(getUploadErrorMessage(error));
-                        normalizedError.isTimeout = timeoutError;
+                        normalizedError.isTimeout = false;
                         throw normalizedError;
                     }
                 }
@@ -2468,6 +2463,7 @@
 
                 updateLocalVehiclesAfterSave(vehicleId, data, photoUrls, Boolean(editId), nowTimestamp);
                 hideForm();
+                viewVehicle(vehicleId);
             } catch (error) {
                 console.error('Save Error:', error);
                 showNotification('خطأ في الحفظ: ' + error.message, 'error');
@@ -2499,14 +2495,22 @@
             const v = vehicles.find(x => x.id === id);
             if (!v) return;
             
+            const safePhotos = Array.isArray(v.photos) ? v.photos.filter(isSafePhotoUrl) : [];
             let photosHtml = '';
-            if (v.photos && v.photos.length > 0) {
+            if (safePhotos.length > 0) {
                 photosHtml = `
                     <div style="grid-column: span 2; margin-top: 15px;">
                         <label>الصور</label>
                         <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                            ${v.photos.map(p => `<img src="${p}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="openPhotoModal('${p}')">`).join('')}
+                            ${safePhotos.map(p => `<img src="${p}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="openPhotoModal('${p}')">`).join('')}
                         </div>
+                    </div>
+                `;
+            } else {
+                photosHtml = `
+                    <div style="grid-column: span 2; margin-top: 15px;">
+                        <label>الصور</label>
+                        <div style="margin-top: 10px; color: #6b7280;">لا توجد صور محفوظة</div>
                     </div>
                 `;
             }
