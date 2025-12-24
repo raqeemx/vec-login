@@ -2274,27 +2274,17 @@
             return message.includes('timeout') || message.includes('deadline') || message.includes('مهلة');
         }
 
-        function waitForUploadCompletion(uploadTask, timeoutMs) {
-            return Promise.race([
-                new Promise((resolve, reject) => {
-                    const unsubscribe = uploadTask.on(
-                        'state_changed',
-                        null,
-                        (error) => {
-                            unsubscribe();
-                            reject(error);
-                        },
-                        () => {
-                            unsubscribe();
-                            resolve(uploadTask.snapshot);
-                        }
-                    );
-                }),
-                new Promise((_, reject) => setTimeout(
-                    () => reject(new Error('انتهت مهلة رفع الصورة')),
-                    timeoutMs
-                ))
-            ]);
+        async function getDownloadUrlWithRetry(ref, timeoutMs, retries = 1) {
+            let lastError = null;
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                try {
+                    return await withTimeout(ref.getDownloadURL(), timeoutMs, 'انتهت مهلة جلب رابط الصورة');
+                } catch (error) {
+                    lastError = error;
+                    if (!isTimeoutError(error)) break;
+                }
+            }
+            throw lastError;
         }
 
         async function getDownloadUrlWithRetry(ref, timeoutMs, retries = 1) {
