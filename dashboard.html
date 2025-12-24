@@ -455,6 +455,55 @@
         body.dark-mode .status-fair { background: #92400e; color: #fef3c7; }
         body.dark-mode .status-poor { background: #991b1b; color: #fee2e2; }
 
+        .vehicle-photos {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .vehicle-photos.empty {
+            padding: 10px 12px;
+            background: white;
+            border: 1px dashed var(--gray-200);
+            border-radius: 10px;
+            color: var(--gray-600);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        body.dark-mode .vehicle-photos.empty {
+            background: #1f2937;
+            border-color: #4b5563;
+            color: #9ca3af;
+        }
+
+        .vehicle-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+            background: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .vehicle-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        body.dark-mode .vehicle-photo {
+            border-color: #4b5563;
+            background: #111827;
+        }
+
         .vehicle-details {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1053,6 +1102,180 @@
         .file-input-hidden {
             display: none;
         }
+
+        /* Insights */
+        .insights-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .insight-card {
+            background: white;
+            padding: 18px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            display: grid;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.dark-mode .insight-card {
+            background: #1f2937;
+            color: white;
+        }
+
+        .insight-card .label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+
+        body.dark-mode .insight-card .label {
+            color: #cbd5e1;
+        }
+
+        .insight-card .value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insight-card .trend {
+            font-size: 0.85rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .insight-icon {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.16), rgba(118, 75, 162, 0.16));
+            color: var(--primary);
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            font-size: 1.2rem;
+        }
+
+        body.dark-mode .insight-icon {
+            color: #c4d4ff;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .distribution-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            margin-bottom: 25px;
+        }
+
+        body.dark-mode .distribution-panel {
+            background: #1f2937;
+            color: white;
+        }
+
+        .progress-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 70px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--gray-200);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar span {
+            display: block;
+            height: 100%;
+            border-radius: 999px;
+        }
+
+        body.dark-mode .progress-bar {
+            background: #374151;
+        }
+
+        .timeline-section {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            margin-bottom: 25px;
+        }
+
+        body.dark-mode .timeline-section {
+            background: #1f2937;
+            color: white;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 12px;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+
+        body.dark-mode .timeline-item {
+            border-color: #374151;
+        }
+
+        .timeline-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: grid;
+            place-items: center;
+            font-size: 1rem;
+        }
+
+        .timeline-meta {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+
+        body.dark-mode .timeline-meta {
+            color: #cbd5e1;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--gray-100);
+            color: var(--gray-800);
+            font-size: 0.85rem;
+        }
+
+        body.dark-mode .chip {
+            background: #374151;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -1122,6 +1345,55 @@
                 </button>
             </div>
 
+            <div class="insights-wrapper">
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="label">متوسط قيمة السوق</div>
+                    <div class="value" id="avgMarketValue">--</div>
+                    <div class="trend" id="valueTrend"><i class="fas fa-arrow-up"></i> جاهز للتصدير</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-star-half-alt"></i></div>
+                    <div class="label">أكثر تقييم شيوعاً</div>
+                    <div class="value" id="commonRating">--</div>
+                    <div class="trend" style="color: var(--info);" id="ratingSummary"><i class="fas fa-equals"></i> تحديث دوري</div>
+                </div>
+                <div class="insight-card">
+                    <div class="insight-icon"><i class="fas fa-warehouse"></i></div>
+                    <div class="label">الصانع الأبرز</div>
+                    <div class="value" id="topMake">--</div>
+                    <div class="trend" style="color: var(--warning);" id="totalPhotos"><i class="fas fa-camera"></i> 0 صورة</div>
+                </div>
+            </div>
+
+            <div class="distribution-panel">
+                <h3 style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-adjust"></i> توزيع التقييمات
+                </h3>
+                <div id="ratingBreakdown">
+                    <div class="progress-row">
+                        <span>ممتاز</span>
+                        <div class="progress-bar"><span id="progressExcellent" style="background:#10b981; width:0%;"></span></div>
+                        <span id="countExcellent">0</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>جيد</span>
+                        <div class="progress-bar"><span id="progressGood" style="background:#3b82f6; width:0%;"></span></div>
+                        <span id="countGood">0</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>مقبول</span>
+                        <div class="progress-bar"><span id="progressFair" style="background:#f59e0b; width:0%;"></span></div>
+                        <span id="countFair">0</span>
+                    </div>
+                    <div class="progress-row">
+                        <span>ضعيف</span>
+                        <div class="progress-bar"><span id="progressPoor" style="background:#ef4444; width:0%;"></span></div>
+                        <span id="countPoor">0</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Search & Filter Section -->
             <div class="search-filter-section">
                 <div class="search-filter-grid">
@@ -1180,6 +1452,22 @@
                     <button type="button" class="btn btn-secondary" onclick="resetFilters()" style="padding: 8px 15px; font-size: 0.85rem;">
                         <i class="fas fa-redo"></i> إعادة تعيين
                     </button>
+                </div>
+            </div>
+
+            <div class="timeline-section">
+                <h3 style="margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-history"></i> آخر النشاطات
+                </h3>
+                <div id="timelineList">
+                    <div class="timeline-item">
+                        <div class="timeline-icon"><i class="fas fa-info-circle"></i></div>
+                        <div>
+                            <strong>لا يوجد نشاط بعد</strong>
+                            <div class="timeline-meta">عند إضافة المركبات ستظهر هنا</div>
+                        </div>
+                        <span class="chip"><i class="fas fa-clock"></i> الآن</span>
+                    </div>
                 </div>
             </div>
 
@@ -1380,6 +1668,7 @@
         let unsubscribeSnapshot = null;
         let authTimeout = null;
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+        const UPLOAD_TIMEOUT = 90000; // 90 seconds safety timeout for photo uploads on slow connections
 
         // ========================================
         // Authentication
@@ -1512,6 +1801,106 @@
             
             document.getElementById('totalVehicles').textContent = total;
             document.getElementById('totalValue').textContent = totalValue.toLocaleString();
+            updateAnalytics();
+        }
+
+        function updateAnalytics() {
+            const breakdown = ['excellent', 'good', 'fair', 'poor'];
+            const counts = breakdown.reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
+            let totalValue = 0;
+            let photoTotal = 0;
+            const makeCount = {};
+
+            vehicles.forEach(v => {
+                const rating = v.overallRating || 'good';
+                counts[rating] = (counts[rating] || 0) + 1;
+                totalValue += parseFloat(v.marketValue) || 0;
+                if (Array.isArray(v.photos)) {
+                    photoTotal += v.photos.filter(isSafePhotoUrl).length;
+                }
+                if (v.make) {
+                    makeCount[v.make] = (makeCount[v.make] || 0) + 1;
+                }
+            });
+
+            const total = vehicles.length || 1;
+            const avgValue = Math.round(totalValue / total);
+            const topMake = Object.entries(makeCount).sort((a, b) => b[1] - a[1])[0]?.[0] || '—';
+            const popularRating = breakdown.sort((a, b) => (counts[b] || 0) - (counts[a] || 0))[0];
+
+            updateDistribution(counts, vehicles.length);
+            renderInsights(avgValue, topMake, photoTotal, popularRating);
+            renderTimeline();
+        }
+
+        function renderInsights(avgValue, topMake, photoTotal, popularRating) {
+            const avgEl = document.getElementById('avgMarketValue');
+            const makeEl = document.getElementById('topMake');
+            const photoEl = document.getElementById('totalPhotos');
+            const ratingEl = document.getElementById('commonRating');
+            const ratingSummary = document.getElementById('ratingSummary');
+
+            if (avgEl) avgEl.textContent = `${avgValue.toLocaleString()} ر.س`;
+            if (makeEl) makeEl.textContent = topMake;
+            if (photoEl) photoEl.innerHTML = `<i class="fas fa-camera"></i> ${photoTotal} صورة`;
+            if (ratingEl) ratingEl.textContent = getRatingText(popularRating || '');
+            if (ratingSummary) ratingSummary.innerHTML = `<i class="fas fa-sync-alt"></i> ${vehicles.length} مركبة متزامنة`;
+        }
+
+        function updateDistribution(counts, total) {
+            const safeTotal = Math.max(total, 1);
+            const map = {
+                excellent: { bar: 'progressExcellent', count: 'countExcellent' },
+                good: { bar: 'progressGood', count: 'countGood' },
+                fair: { bar: 'progressFair', count: 'countFair' },
+                poor: { bar: 'progressPoor', count: 'countPoor' }
+            };
+
+            Object.entries(map).forEach(([key, ids]) => {
+                const percentage = Math.round(((counts[key] || 0) / safeTotal) * 100);
+                const bar = document.getElementById(ids.bar);
+                const count = document.getElementById(ids.count);
+                if (bar) bar.style.width = `${percentage}%`;
+                if (count) count.textContent = counts[key] || 0;
+            });
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timelineList');
+            if (!container) return;
+
+            if (!vehicles.length) {
+                container.innerHTML = `
+                    <div class="timeline-item">
+                        <div class="timeline-icon"><i class="fas fa-info-circle"></i></div>
+                        <div>
+                            <strong>لا يوجد نشاط بعد</strong>
+                            <div class="timeline-meta">عند إضافة المركبات ستظهر هنا</div>
+                        </div>
+                        <span class="chip"><i class="fas fa-clock"></i> الآن</span>
+                    </div>
+                `;
+                return;
+            }
+
+            const recent = [...vehicles]
+                .sort((a, b) => (b.createdAt?.toDate?.() || 0) - (a.createdAt?.toDate?.() || 0))
+                .slice(0, 5);
+
+            container.innerHTML = recent.map(v => {
+                const date = formatDate(v.createdAt);
+                const rating = getRatingText(v.overallRating);
+                return `
+                    <div class="timeline-item">
+                        <div class="timeline-icon"><i class="fas fa-car-side"></i></div>
+                        <div>
+                            <strong>${v.make || 'مركبة'} ${v.model || ''}</strong>
+                            <div class="timeline-meta">${rating} • ${v.contractNo || 'بدون عقد'}</div>
+                        </div>
+                        <span class="chip"><i class="fas fa-clock"></i> ${date}</span>
+                    </div>
+                `;
+            }).join('');
         }
 
         // ========================================
@@ -1607,6 +1996,32 @@
             document.getElementById('vehicleCount').textContent = count;
         }
 
+        function renderVehiclePhotos(photos) {
+            const safePhotos = Array.isArray(photos) ? photos.filter(isSafePhotoUrl).slice(0, 3) : [];
+
+            if (safePhotos.length === 0) {
+                return `
+                    <div class="vehicle-photos empty">
+                        <i class="fas fa-image"></i>
+                        <span>لا توجد صور</span>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="vehicle-photos">
+                    ${safePhotos.map(p => {
+                        const safeUrl = p.replace(/'/g, "\\'");
+                        return `
+                            <button type="button" class="vehicle-photo" onclick="openPhotoModal('${safeUrl}')">
+                                <img src="${p}" alt="صورة المركبة">
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
         // ========================================
         // Render Vehicles
         // ========================================
@@ -1628,53 +2043,59 @@
                 return;
             }
             
-            grid.innerHTML = filteredVehicles.map(v => `
-                <div class="vehicle-card">
-                    <div class="vehicle-header">
-                        <div>
-                            <div class="vehicle-title">${v.make || ''} ${v.model || ''} ${v.year || ''}</div>
-                            <div class="vehicle-id">${v.contractNo || 'بدون رقم عقد'}</div>
+            grid.innerHTML = filteredVehicles.map(v => {
+                const photoSection = renderVehiclePhotos(v.photos);
+                
+                return `
+                    <div class="vehicle-card">
+                        <div class="vehicle-header">
+                            <div>
+                                <div class="vehicle-title">${v.make || ''} ${v.model || ''} ${v.year || ''}</div>
+                                <div class="vehicle-id">${v.contractNo || 'بدون رقم عقد'}</div>
+                            </div>
+                            <span class="vehicle-status status-${v.overallRating || 'good'}">${getRatingText(v.overallRating)}</span>
                         </div>
-                        <span class="vehicle-status status-${v.overallRating || 'good'}">${getRatingText(v.overallRating)}</span>
+                        
+                        ${photoSection}
+                        
+                        <div class="vehicle-details">
+                            <div class="detail-item">
+                                <i class="fas fa-user"></i>
+                                <span>${v.customerName || 'غير محدد'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-barcode"></i>
+                                <span>${v.vin || 'غير محدد'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span>${v.odometer ? parseInt(v.odometer).toLocaleString() + ' كم' : 'غير محدد'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>${v.plateNo || 'غير محدد'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="vehicle-value">
+                            <span>القيمة السوقية</span>
+                            <strong>${v.marketValue ? parseInt(v.marketValue).toLocaleString() : 0} ريال</strong>
+                        </div>
+                        
+                        <div class="vehicle-actions">
+                            <button class="btn-action btn-view" onclick="viewVehicle('${v.id}')">
+                                <i class="fas fa-eye"></i> عرض
+                            </button>
+                            <button class="btn-action btn-edit" onclick="editVehicle('${v.id}')">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button class="btn-action btn-delete" onclick="confirmDelete('${v.id}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
                     </div>
-                    
-                    <div class="vehicle-details">
-                        <div class="detail-item">
-                            <i class="fas fa-user"></i>
-                            <span>${v.customerName || 'غير محدد'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-barcode"></i>
-                            <span>${v.vin || 'غير محدد'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>${v.odometer ? parseInt(v.odometer).toLocaleString() + ' كم' : 'غير محدد'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-id-card"></i>
-                            <span>${v.plateNo || 'غير محدد'}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="vehicle-value">
-                        <span>القيمة السوقية</span>
-                        <strong>${v.marketValue ? parseInt(v.marketValue).toLocaleString() : 0} ريال</strong>
-                    </div>
-                    
-                    <div class="vehicle-actions">
-                        <button class="btn-action btn-view" onclick="viewVehicle('${v.id}')">
-                            <i class="fas fa-eye"></i> عرض
-                        </button>
-                        <button class="btn-action btn-edit" onclick="editVehicle('${v.id}')">
-                            <i class="fas fa-edit"></i> تعديل
-                        </button>
-                        <button class="btn-action btn-delete" onclick="confirmDelete('${v.id}')">
-                            <i class="fas fa-trash"></i> حذف
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function getRatingText(rating) {
@@ -1705,6 +2126,16 @@
                 'electric': 'كهربائي'
             };
             return fuels[fuel] || 'غير محدد';
+        }
+
+        function formatDate(value) {
+            if (value?.toDate) {
+                return value.toDate().toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            }
+            if (typeof value === 'string') {
+                return new Date(value).toLocaleString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            }
+            return '—';
         }
 
         // ========================================
@@ -1771,6 +2202,13 @@
             
             if (file.size > MAX_FILE_SIZE) {
                 showNotification('حجم الصورة يجب أن لا يتجاوز 5MB', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                showNotification('يرجى اختيار ملف صورة صحيح', 'error');
+                event.target.value = '';
                 return;
             }
             
@@ -1824,9 +2262,133 @@
         // ========================================
         // Save Vehicle
         // ========================================
-        async function saveVehicle() {
-            const editId = document.getElementById('editId').value;
+        function withTimeout(promise, timeoutMs, errorMessage) {
+            return Promise.race([
+                promise,
+                new Promise((_, reject) => setTimeout(
+                    () => reject(new Error(errorMessage || 'Operation timed out')),
+                    timeoutMs
+                ))
+            ]);
+        }
+
+        function waitForUploadCompletion(uploadTask, timeoutMs) {
+            const uploadPromise = new Promise((resolve, reject) => {
+                uploadTask.on(
+                    'state_changed',
+                    null,
+                    (error) => reject(error),
+                    () => resolve(uploadTask.snapshot)
+                );
+            });
+
+            return withTimeout(uploadPromise, timeoutMs, 'انتهت مهلة رفع الصورة');
+        }
+
+        function isTimeoutError(error) {
+            const message = (error?.message || '').toLowerCase();
+            return message.includes('timeout') || message.includes('deadline') || message.includes('مهلة');
+        }
+
+        async function getDownloadUrlWithRetry(ref, timeoutMs, retries = 1) {
+            let lastError = null;
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                try {
+                    return await withTimeout(ref.getDownloadURL(), timeoutMs, 'انتهت مهلة جلب رابط الصورة');
+                } catch (error) {
+                    lastError = error;
+                    if (!isTimeoutError(error)) break;
+                }
+            }
+            throw lastError;
+        }
+
+        function getUploadErrorMessage(error) {
+            if (!error) return 'تعذر رفع الصور. حاول مجدداً.';
+            if (error.code === 'storage/unauthorized') {
+                return 'لا توجد صلاحية لرفع الصور. يرجى تحديث قواعد Firebase Storage.';
+            }
+            if (error.code === 'storage/quota-exceeded') {
+                return 'تم تجاوز حصة Firebase Storage. قم بتفريغ المساحة أو ترقية الخطة.';
+            }
+            if (error.message && error.message.includes('انتهت مهلة')) {
+                return error.message;
+            }
+            if (isTimeoutError(error)) {
+                return 'انتهت مهلة رفع الصور. يرجى المحاولة مرة أخرى أو تقليل حجم الملف.';
+            }
+            return error.message || 'تعذر رفع الصور. حاول مجدداً.';
+        }
+
+        async function uploadPhotos(vehicleId, existingPhotos = []) {
+            const safeExistingPhotos = Array.isArray(existingPhotos)
+                ? existingPhotos.map(photo => isSafePhotoUrl(photo) ? photo : null)
+                : [];
+            const photoUrls = [];
+            const warnings = [];
             
+            for (let i = 0; i < vehiclePhotos.length; i++) {
+                const entry = vehiclePhotos[i];
+                if (!entry) continue;
+
+                if (entry.url && !entry.file) {
+                    photoUrls.push(entry.url);
+                    continue;
+                }
+
+                if (entry.file) {
+                    const fallbackPhoto = safeExistingPhotos[i];
+                    const extension = (entry.file.name.split('.').pop() || 'jpg').replace(/[^a-zA-Z0-9]/g, '') || 'jpg';
+                    const ref = storage.ref(`users/${currentUser.uid}/vehicles/${vehicleId}/photo_${i}_${Date.now()}.${extension}`);
+                    
+                    try {
+                        const uploadTask = ref.put(entry.file, {
+                            contentType: entry.file.type || 'image/jpeg'
+                        });
+                        const snapshot = await waitForUploadCompletion(uploadTask, UPLOAD_TIMEOUT);
+                        const url = await getDownloadUrlWithRetry(snapshot.ref, UPLOAD_TIMEOUT, 1);
+                        photoUrls.push(url);
+                    } catch (error) {
+                        console.error('Photo upload failed:', error);
+                        const timeoutError = isTimeoutError(error);
+
+                        if (timeoutError && fallbackPhoto) {
+                            console.warn('Upload timed out, keeping existing photo for slot', i);
+                            warnings.push(`تم الاحتفاظ بالصورة رقم ${i + 1} بسبب بطء الاتصال.`);
+                            photoUrls.push(fallbackPhoto);
+                            continue;
+                        }
+
+                        if (timeoutError) {
+                            warnings.push(`انتهت مهلة رفع الصورة رقم ${i + 1}. تم حفظ البيانات بدون هذه الصورة.`);
+                            continue;
+                        }
+
+                        const normalizedError = new Error(getUploadErrorMessage(error));
+                        normalizedError.isTimeout = false;
+                        throw normalizedError;
+                    }
+                }
+            }
+
+            return { photoUrls, warnings };
+        }
+
+        async function saveVehicle() {
+            const form = document.getElementById('vehicleForm');
+            if (!form) return;
+
+            if (!form.reportValidity()) {
+                showNotification('يرجى تعبئة الحقول المطلوبة قبل الحفظ', 'error');
+                return;
+            }
+
+            if (!currentUser) {
+                showNotification('انتهت صلاحية الجلسة، يرجى تسجيل الدخول مرة أخرى', 'error');
+                return;
+            }
+
+            const editId = document.getElementById('editId').value;
             const data = {
                 contractNo: document.getElementById('contractNo').value.trim(),
                 vin: document.getElementById('vin').value.trim(),
@@ -1847,28 +2409,98 @@
                 photos: vehiclePhotos.filter(p => p !== null),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-            
+
+            const validationError = validateVehiclePayload(data);
+            if (validationError) {
+                showNotification(validationError, 'error');
+                return;
+            }
+
             showLoading(editId ? 'جاري التحديث...' : 'جاري الحفظ...');
-            
+
             try {
+                const existingPhotos = vehicles.find(v => v.id === editId)?.photos || [];
+                const safeExistingPhotos = Array.isArray(existingPhotos)
+                    ? existingPhotos.map(photo => isSafePhotoUrl(photo) ? photo : null)
+                    : [];
+                const cleanedExistingPhotos = safeExistingPhotos.filter(Boolean);
+
+                let vehicleRef;
+                let vehicleId = editId;
+
+                if (vehicleId) {
+                    vehicleRef = db.collection('users').doc(currentUser.uid)
+                        .collection('vehicles').doc(vehicleId);
+                } else {
+                    vehicleRef = db.collection('users').doc(currentUser.uid)
+                        .collection('vehicles').doc();
+                    vehicleId = vehicleRef.id;
+                }
+
+                const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp();
+                const nowTimestamp = firebase.firestore.Timestamp.now();
+                
+                let photoUrls = cleanedExistingPhotos;
+                let uploadWarnings = [];
+                try {
+                    const uploadResult = await uploadPhotos(vehicleId, safeExistingPhotos);
+                    photoUrls = uploadResult.photoUrls;
+                    uploadWarnings = uploadResult.warnings || [];
+                } catch (error) {
+                    if (error.isTimeout && cleanedExistingPhotos.length) {
+                        showNotification('انتهت مهلة رفع الصور، تم الاحتفاظ بالصور الحالية وحفظ البيانات المحدثة.', 'warning');
+                        photoUrls = cleanedExistingPhotos;
+                        uploadWarnings.push('تم حفظ البيانات مع الصور الحالية بسبب بطء الاتصال.');
+                    } else {
+                        throw error;
+                    }
+                }
+
+                const payload = {
+                    ...data,
+                    photos: photoUrls,
+                    updatedAt: serverTimestamp
+                };
+
                 if (editId) {
                     await db.collection('users').doc(currentUser.uid)
                         .collection('vehicles').doc(editId).update(data);
                     showNotification('تم تحديث المركبة بنجاح', 'success');
                 } else {
-                    data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-                    await db.collection('users').doc(currentUser.uid)
-                        .collection('vehicles').add(data);
+                    payload.createdAt = serverTimestamp;
+                    await vehicleRef.set(payload);
                     showNotification('تم إضافة المركبة بنجاح', 'success');
                 }
-                
+
+                if (uploadWarnings.length) {
+                    uploadWarnings.forEach(message => showNotification(message, 'warning'));
+                }
+
+                updateLocalVehiclesAfterSave(vehicleId, data, photoUrls, Boolean(editId), nowTimestamp);
                 hideForm();
-                hideLoading();
+                viewVehicle(vehicleId);
             } catch (error) {
                 console.error('Save Error:', error);
-                hideLoading();
                 showNotification('خطأ في الحفظ: ' + error.message, 'error');
+            } finally {
+                hideLoading();
             }
+        }
+
+        function updateLocalVehiclesAfterSave(vehicleId, data, photos, isEdit, timestamp) {
+            const existing = vehicles.find(v => v.id === vehicleId) || {};
+            const updatedVehicle = {
+                ...existing,
+                ...data,
+                id: vehicleId,
+                photos: photos,
+                createdAt: isEdit ? (existing.createdAt || timestamp) : timestamp,
+                updatedAt: timestamp
+            };
+
+            vehicles = [updatedVehicle, ...vehicles.filter(v => v.id !== vehicleId)];
+            applyFilters();
+            updateStats();
         }
 
         // ========================================
@@ -1878,14 +2510,22 @@
             const v = vehicles.find(x => x.id === id);
             if (!v) return;
             
+            const safePhotos = Array.isArray(v.photos) ? v.photos.filter(isSafePhotoUrl) : [];
             let photosHtml = '';
-            if (v.photos && v.photos.length > 0) {
+            if (safePhotos.length > 0) {
                 photosHtml = `
                     <div style="grid-column: span 2; margin-top: 15px;">
                         <label>الصور</label>
                         <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                            ${v.photos.map(p => `<img src="${p}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="openPhotoModal('${p}')">`).join('')}
+                            ${safePhotos.map(p => `<img src="${p}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="openPhotoModal('${p}')">`).join('')}
                         </div>
+                    </div>
+                `;
+            } else {
+                photosHtml = `
+                    <div style="grid-column: span 2; margin-top: 15px;">
+                        <label>الصور</label>
+                        <div style="margin-top: 10px; color: #6b7280;">لا توجد صور محفوظة</div>
                     </div>
                 `;
             }
@@ -2041,6 +2681,67 @@
             URL.revokeObjectURL(url);
             
             showNotification('تم تصدير JSON بنجاح', 'success');
+        }
+
+        function isSafePhotoUrl(url) {
+            if (typeof url !== 'string') return false;
+            const trimmed = url.trim();
+            if (!trimmed) return false;
+            if (trimmed.startsWith('data:')) return false;
+            if (!/^https?:\/\//i.test(trimmed)) return false;
+            return trimmed.length <= 2048;
+        }
+
+        function validateVehiclePayload(vehicle) {
+            if (!vehicle || typeof vehicle !== 'object') return 'بيانات المركبة غير صالحة';
+
+            const requiredString = (value, label, maxLength = 200) => {
+                if (typeof value !== 'string' || !value.trim()) return `${label} مطلوب`;
+                if (value.length > maxLength) return `${label} يتجاوز الحد المسموح (${maxLength})`;
+                return null;
+            };
+
+            const contractError = requiredString(vehicle.contractNo, 'رقم العقد');
+            if (contractError) return contractError;
+
+            const vinError = requiredString(vehicle.vin, 'رقم الهيكل (VIN)', 40);
+            if (vinError) return vinError;
+
+            const customerError = requiredString(vehicle.customerName, 'اسم العميل');
+            if (customerError) return customerError;
+
+            const makeError = requiredString(vehicle.make, 'نوع المركبة');
+            if (makeError) return makeError;
+
+            const modelError = requiredString(vehicle.model, 'الموديل');
+            if (modelError) return modelError;
+
+            const year = parseInt(vehicle.year, 10);
+            if (Number.isNaN(year) || year < 1990 || year > 2100) return 'سنة الصنع غير صالحة';
+
+            if (vehicle.marketValue && isNaN(parseFloat(vehicle.marketValue))) {
+                return 'القيمة السوقية يجب أن تكون رقماً';
+            }
+
+            if (vehicle.photos && Array.isArray(vehicle.photos)) {
+                const unsafe = vehicle.photos.find(p => !isSafePhotoUrl(p));
+                if (unsafe) return 'روابط الصور غير صالحة أو تحتوي بيانات مضمّنة';
+            }
+
+            if (JSON.stringify(vehicle).length > 500000) {
+                return 'حجم سجل المركبة كبير جداً';
+            }
+
+            return null;
+        }
+
+        function sanitizeVehiclePayload(vehicle) {
+            const sanitized = { ...vehicle };
+            delete sanitized.id;
+            sanitized.photos = Array.isArray(vehicle.photos)
+                ? vehicle.photos.filter(isSafePhotoUrl).slice(0, 3)
+                : [];
+            return sanitized;
         }
 
         async function importData(event) {
