@@ -1658,7 +1658,7 @@
         let unsubscribeSnapshot = null;
         let authTimeout = null;
         const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-        const UPLOAD_TIMEOUT = 45000; // 45 seconds safety timeout for photo uploads on slow connections
+        const UPLOAD_TIMEOUT = 90000; // 90 seconds safety timeout for photo uploads on slow connections
 
         // ========================================
         // Authentication
@@ -2297,6 +2297,19 @@
             ]);
         }
 
+        async function getDownloadUrlWithRetry(ref, timeoutMs, retries = 1) {
+            let lastError = null;
+            for (let attempt = 0; attempt <= retries; attempt++) {
+                try {
+                    return await withTimeout(ref.getDownloadURL(), timeoutMs, 'انتهت مهلة جلب رابط الصورة');
+                } catch (error) {
+                    lastError = error;
+                    if (!isTimeoutError(error)) break;
+                }
+            }
+            throw lastError;
+        }
+
         function getUploadErrorMessage(error) {
             if (!error) return 'تعذر رفع الصور. حاول مجدداً.';
             if (error.code === 'storage/unauthorized') {
@@ -2340,7 +2353,7 @@
                             contentType: entry.file.type || 'image/jpeg'
                         });
                         const snapshot = await waitForUploadCompletion(uploadTask, UPLOAD_TIMEOUT);
-                        const url = await withTimeout(snapshot.ref.getDownloadURL(), UPLOAD_TIMEOUT, 'انتهت مهلة جلب رابط الصورة');
+                        const url = await getDownloadUrlWithRetry(snapshot.ref, UPLOAD_TIMEOUT, 1);
                         photoUrls.push(url);
                     } catch (error) {
                         console.error('Photo upload failed:', error);
@@ -2354,11 +2367,12 @@
                         }
 
                         if (timeoutError) {
-                            warnings.push(`انتهت مهلة رفع الصورة رقم ${i + 1}. حاول مرة أخرى بعد تحسين الاتصال.`);
+                            warnings.push(`انتهت مهلة رفع الصورة رقم ${i + 1}. تم حفظ البيانات بدون هذه الصورة.`);
+                            continue;
                         }
 
                         const normalizedError = new Error(getUploadErrorMessage(error));
-                        normalizedError.isTimeout = timeoutError;
+                        normalizedError.isTimeout = false;
                         throw normalizedError;
                     }
                 }
