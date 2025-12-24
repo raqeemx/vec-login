@@ -2472,6 +2472,7 @@
 
                 updateLocalVehiclesAfterSave(vehicleId, data, photoUrls, Boolean(editId), nowTimestamp);
                 hideForm();
+                viewVehicle(vehicleId);
             } catch (error) {
                 console.error('Save Error:', error);
                 showNotification('خطأ في الحفظ: ' + error.message, 'error');
@@ -2503,14 +2504,22 @@
             const v = vehicles.find(x => x.id === id);
             if (!v) return;
             
+            const safePhotos = Array.isArray(v.photos) ? v.photos.filter(isSafePhotoUrl) : [];
             let photosHtml = '';
-            if (v.photos && v.photos.length > 0) {
+            if (safePhotos.length > 0) {
                 photosHtml = `
                     <div style="grid-column: span 2; margin-top: 15px;">
                         <label>الصور</label>
                         <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
-                            ${v.photos.map(p => `<img src="${p}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="openPhotoModal('${p}')">`).join('')}
+                            ${safePhotos.map(p => `<img src="${p}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer;" onclick="openPhotoModal('${p}')">`).join('')}
                         </div>
+                    </div>
+                `;
+            } else {
+                photosHtml = `
+                    <div style="grid-column: span 2; margin-top: 15px;">
+                        <label>الصور</label>
+                        <div style="margin-top: 10px; color: #6b7280;">لا توجد صور محفوظة</div>
                     </div>
                 `;
             }
