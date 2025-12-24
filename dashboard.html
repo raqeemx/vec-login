@@ -2269,22 +2269,22 @@
             ]);
         }
 
+        function waitForUploadCompletion(uploadTask, timeoutMs) {
+            const uploadPromise = new Promise((resolve, reject) => {
+                uploadTask.on(
+                    'state_changed',
+                    null,
+                    (error) => reject(error),
+                    () => resolve(uploadTask.snapshot)
+                );
+            });
+
+            return withTimeout(uploadPromise, timeoutMs, 'انتهت مهلة رفع الصورة');
+        }
+
         function isTimeoutError(error) {
             const message = (error?.message || '').toLowerCase();
             return message.includes('timeout') || message.includes('deadline') || message.includes('مهلة');
-        }
-
-        async function getDownloadUrlWithRetry(ref, timeoutMs, retries = 1) {
-            let lastError = null;
-            for (let attempt = 0; attempt <= retries; attempt++) {
-                try {
-                    return await withTimeout(ref.getDownloadURL(), timeoutMs, 'انتهت مهلة جلب رابط الصورة');
-                } catch (error) {
-                    lastError = error;
-                    if (!isTimeoutError(error)) break;
-                }
-            }
-            throw lastError;
         }
 
         async function getDownloadUrlWithRetry(ref, timeoutMs, retries = 1) {
